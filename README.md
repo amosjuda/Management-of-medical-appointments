@@ -1,7 +1,7 @@
 # Sistema de Gestão de Consultas Médicas
 
 O **Sistema de Gestão de Consultas Médicas** foi desenvolvido para viabilizar a interação eficiente entre profissionais da saúde e cidadãos. Este software facilita a gestão de usuários em unidades de saúde, permitindo as seguintes funcionalidades:
-- Cadastro, inserção, exclusão, atualização e busca de:
+- Cadastro, inserção, exclusão, atualização e busca, o CRUD completo para:
   - Pacientes.
   - Médicos.
   - Consultas médicas.
@@ -13,10 +13,11 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
 ---
 
 ## Tecnologias Utilizadas
-- **Linguagem de programação**: Java (versão **JavaSE-22**).
-- **Banco de dados**: MySQL, utilizando a biblioteca **MySQLConnector**.
-- **API**: JDBC (para acesso ao banco de dados).
-- **IDE**: Eclipse.
+- **Linguagem de programação**: Java (versão **JavaSE-17**).
+- **Banco de dados**: PostgreSQL - pgAdmin 4.
+- **IDE**: Intellij.
+- **Postman**: Teste da API.
+
 
 ---
 
@@ -44,15 +45,16 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
 ## Instalação e Configuração
 ### Pré-requisitos
 Certifique-se de ter os seguintes requisitos instalados:
-- JavaSE-22.
-- MySQL Server.
-- Eclipse IDE.
-- MySQLConnector para conexão com o banco de dados.
+- JavaSE-17 LTS version.
+- PostgreSQL - pgAdmin 4.
+- Intellij IDE.
+- Postman.
 
 ### Passos
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/seu-usuario/sistema-gestao-consultas.git
+   git clone https://github.com/seu-usuario/Management-of-medical-appointments
+.git
    
 ### Espaço reservado para incluir capturas de tela relevantes ao longo do desenvolvimento.
 
@@ -66,15 +68,3 @@ Agradecemos sua colaboração para tornar este projeto ainda melhor.
 
 ### Licença
 Este projeto é de código aberto. Sinta-se livre para utilizar, modificar e distribuir conforme necessário.
-
-## Ciclo de Vida do Projeto
-O ciclo de vida do projeto documenta os desafios enfrentados e as atualizações implementadas ao longo do desenvolvimento.
-
-### Fase Atual: Início do Projeto
- - Estruturação do backend em JavaSE-22.
- - Configuração inicial do banco de dados MySQL.
- - Estabelecendo a estrutura de conexão com o banco de dados, gerenciando conexões JDBC, carregando propriedades, e fechando recursos do banco de dados com segurança.
-### Atualizações Futuras
- - Melhorias planejadas:
-Integração com Spring boot. Melhora a segurança no acesso aos bancos de dados. Mudança para API JPA para maior persistência de banco de dados e melhora da performance. Otimização para grande volume de dados.
- - Desafios enfrentados:
