@@ -18,6 +18,9 @@ public class Doctor implements Serializable {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String specialty;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -38,6 +41,14 @@ public class Doctor implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(String specialty) {
+        this.specialty = specialty;
     }
 
     public String getEmail() {

@@ -20,11 +20,11 @@ public class Appointments implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    private Patient patientId;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    private Doctor doctorId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,20 +48,20 @@ public class Appointments implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public Patient getPatientId() {
+        return patientId;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatientId(Patient patientId) {
+        this.patientId = patientId;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+    public Doctor getDoctorId() {
+        return doctorId;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setDoctorId(Doctor doctorId) {
+        this.doctorId = doctorId;
     }
 
     public AppointmentStatus getStatus() {
