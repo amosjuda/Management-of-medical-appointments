@@ -1,7 +1,7 @@
 # Sistema de Gestão de Consultas Médicas
 
 O **Sistema de Gestão de Consultas Médicas** foi desenvolvido para viabilizar a interação eficiente entre profissionais da saúde e cidadãos. Este software facilita a gestão de usuários em unidades de saúde, permitindo as seguintes funcionalidades:
-- Cadastro, inserção, exclusão, atualização e busca, o CRUD completo para:
+- inserção, exclusão, atualização e busca, o CRUD completo para:
   - Pacientes.
   - Médicos.
   - Consultas médicas.
@@ -29,15 +29,17 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
    - Busca por pacientes.
 
 2. **Gerenciamento de Médicos**:
-   - Cadastro e atualização de informações profissionais.
-   - Exclusão de médicos.
-   - Busca avançada.
+   - Inserir um médico no banco.
+   - Atualizar os dados de um médico.
+   - Deletar um médico pelo ID.
+   - Buscar um médico pelo ID.
+   - Listar todos os médicos.
 
-3. **Gestão de Consultas**:
+4. **Gestão de Consultas**:
    - Marcação e atualização de consultas.
    - Controle e acompanhamento de horários.
 
-4. **Flexibilidade de Uso**:
+5. **Flexibilidade de Uso**:
    - Adapta-se tanto a clínicas quanto a hospitais.
 
 ---
