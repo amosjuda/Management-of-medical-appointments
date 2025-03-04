@@ -1,0 +1,11 @@
+package com.example.Management_of_medical_appointments.repositories;
+
+import com.example.Management_of_medical_appointments.models.Appointments;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
+
+@Repository
+public interface AppointmentsRepository extends JpaRepository<Appointments, UUID> {
+}
