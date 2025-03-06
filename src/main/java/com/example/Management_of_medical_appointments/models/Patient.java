@@ -25,7 +25,7 @@ public class Patient implements Serializable {
     @Column(nullable = false)
     private LocalDate birthdate;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patientId", cascade = CascadeType.ALL)
     private List<Appointments> appointments;
 
     public UUID getIdPatient() {

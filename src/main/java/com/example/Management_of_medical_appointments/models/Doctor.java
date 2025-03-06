@@ -24,7 +24,7 @@ public class Doctor implements Serializable {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctorId", cascade = CascadeType.ALL)
     private List<Appointments> appointments;
 
     public UUID getIdDoctor() {
