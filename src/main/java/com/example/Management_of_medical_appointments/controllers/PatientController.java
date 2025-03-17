@@ -8,9 +8,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @RestController
 public class PatientController {
@@ -22,5 +25,10 @@ public class PatientController {
         var patient = new Patient();
         BeanUtils.copyProperties(patientRecordDto, patient);
         return ResponseEntity.status(HttpStatus.CREATED).body(patientRepository.save(patient));
+    }
+
+    @GetMapping("/patient")
+    public ResponseEntity<List<Patient>> getALLPatients() {
+        return ResponseEntity.status(HttpStatus.OK).body(patientRepository.findAll());
     }
 }
