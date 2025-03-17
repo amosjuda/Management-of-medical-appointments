@@ -53,4 +53,14 @@ public class PatientController {
         BeanUtils.copyProperties(patientRecordDto, patient);
         return ResponseEntity.status(HttpStatus.OK).body(patientRepository.save(patient));
     }
+
+    @DeleteMapping("/patient/{id}")
+    public ResponseEntity<Object> deletePatient(@PathVariable(value="id") UUID id) {
+        Optional<Patient> patient0 = patientRepository.findById(id);
+        if(patient0.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+        }
+        patientRepository.delete(patient0.get());
+        return ResponseEntity.status(HttpStatus.OK).body("patient deleted successfully.");
+    }
 }
