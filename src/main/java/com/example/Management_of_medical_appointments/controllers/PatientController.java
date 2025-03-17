@@ -1,6 +1,8 @@
 package com.example.Management_of_medical_appointments.controllers;
 
+import com.example.Management_of_medical_appointments.dtos.DoctorRecordDto;
 import com.example.Management_of_medical_appointments.dtos.PatientRecordDto;
+import com.example.Management_of_medical_appointments.models.Doctor;
 import com.example.Management_of_medical_appointments.models.Patient;
 import com.example.Management_of_medical_appointments.repositories.PatientRepository;
 import jakarta.validation.Valid;
@@ -38,5 +40,17 @@ public class PatientController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
         }
         return ResponseEntity.status(HttpStatus.OK).body(patientO.get());
+    }
+
+    @PutMapping("/patient/{id}")
+    public ResponseEntity<Object> updatePatient(@PathVariable(value="id") UUID id,
+                                               @RequestBody @Valid PatientRecordDto patientRecordDto){
+        Optional<Patient> patientO = patientRepository.findById(id);
+        if(patientO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+        }
+        var patient = patientO.get();
+        BeanUtils.copyProperties(patientRecordDto, patient);
+        return ResponseEntity.status(HttpStatus.OK).body(patientRepository.save(patient));
     }
 }
