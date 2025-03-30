@@ -17,6 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/doctor", "/doctor/{id}").permitAll()  //Allows public access to this endpoint
                         .requestMatchers("/patient", "/patient/{id}").permitAll()
+                        .requestMatchers("/appointment", "/appointment/{id}").permitAll()
                         .anyRequest().authenticated()
                 );
 

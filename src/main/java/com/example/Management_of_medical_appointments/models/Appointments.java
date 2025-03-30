@@ -16,7 +16,7 @@ public class Appointments implements Serializable {
     private UUID idAppointments;
 
     @Column(nullable = false)
-    private LocalDateTime dateTime;
+    private LocalDateTime dateTimeAppointment;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
@@ -40,12 +40,12 @@ public class Appointments implements Serializable {
         this.idAppointments = idAppointments;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getDateTimeAppointment() {
+        return dateTimeAppointment;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setDateTimeAppointment(LocalDateTime dateTimeAppointment) {
+        this.dateTimeAppointment = dateTimeAppointment;
     }
 
     public Patient getPatientId() {
@@ -78,5 +78,11 @@ public class Appointments implements Serializable {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public void setPatient(Patient patient) {
+    }
+
+    public void setDoctor(Doctor doctor) {
     }
 }
