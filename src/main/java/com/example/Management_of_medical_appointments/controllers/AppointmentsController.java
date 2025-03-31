@@ -12,10 +12,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -59,7 +61,11 @@ public class AppointmentsController {
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving appointment: " + e.getMessage());
             }
-
-
     }
+
+    @GetMapping("/appointment")
+    public ResponseEntity<List<Appointments>> getAllAppointments() {
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentsRepository.findAll());
+    }
+
 }
