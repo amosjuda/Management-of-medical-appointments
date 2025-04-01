@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record AppointmentsRecordDto(@NotNull @Future LocalDateTime dateTimeAppointment,
+public record AppointmentsRecordDto(@NotNull @Future LocalDateTime dateTime,
                                     @NotNull UUID patientId,
                                     @NotNull UUID doctorId,
                                     @NotNull AppointmentStatus status,

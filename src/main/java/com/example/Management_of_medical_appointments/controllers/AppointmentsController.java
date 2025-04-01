@@ -8,18 +8,15 @@ import com.example.Management_of_medical_appointments.repositories.AppointmentsR
 import com.example.Management_of_medical_appointments.repositories.DoctorRepository;
 import com.example.Management_of_medical_appointments.repositories.PatientRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class AppointmentsController {
@@ -41,16 +38,27 @@ public class AppointmentsController {
                 Doctor doctor = doctorRepository.findById(appointmentsRecordDto.doctorId())
                         .orElseThrow(() -> new NoSuchElementException("Doctor not found"));
 
+                // Check if there is already an appointment at the same time for the patient and doctor
+                Optional<Appointments> existingAppointment = appointmentsRepository
+                        .findByDateTimeAndPatientAndDoctor(appointmentsRecordDto.dateTime(), patient, doctor);
+
+                if (existingAppointment.isPresent()) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body("Appointment already exists for this patient and doctor at the specified time.");
+                }
+
                 var appointment = new Appointments();
-                BeanUtils.copyProperties(appointmentsRecordDto, appointment);
-                appointment.setPatientId(patient);
-                appointment.setDoctorId(doctor);
+                appointment.setDateTime(appointmentsRecordDto.dateTime());
+                appointment.setStatus(appointmentsRecordDto.status());
+                appointment.setNotes(appointmentsRecordDto.notes());
+                appointment.setPatient(patient);
+                appointment.setDoctor(doctor);
                 Appointments savedAppointment = appointmentsRepository.save(appointment);
 
                 AppointmentsRecordDto appointmentRecord = new AppointmentsRecordDto(
-                        savedAppointment.getDateTimeAppointment(),
-                        savedAppointment.getPatientId().getIdPatient(),
-                        savedAppointment.getDoctorId().getIdDoctor(),
+                        savedAppointment.getDateTime(),
+                        savedAppointment.getPatient().getIdPatient(),
+                        savedAppointment.getDoctor().getIdDoctor(),
                         savedAppointment.getStatus(),
                         savedAppointment.getNotes()
                 );
@@ -66,6 +74,15 @@ public class AppointmentsController {
     @GetMapping("/appointment")
     public ResponseEntity<List<Appointments>> getAllAppointments() {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentsRepository.findAll());
+    }
+
+    @GetMapping("/appointment/{id}")
+    public ResponseEntity<Object> getOneAppointment(@PathVariable(value="id") UUID id) {
+        Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
+        if(appointmentO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentO.get());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.Management_of_medical_appointments.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -25,7 +26,8 @@ public class Patient implements Serializable {
     @Column(nullable = false)
     private LocalDate birthdate;
 
-    @OneToMany(mappedBy = "patientId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<Appointments> appointments;
 
     public UUID getIdPatient() {

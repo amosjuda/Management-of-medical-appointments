@@ -1,7 +1,7 @@
 package com.example.Management_of_medical_appointments.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -16,15 +16,17 @@ public class Appointments implements Serializable {
     private UUID idAppointments;
 
     @Column(nullable = false)
-    private LocalDateTime dateTimeAppointment;
+    private LocalDateTime dateTime;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patientId;
+    @JsonManagedReference
+    private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctorId;
+    @JsonManagedReference
+    private Doctor doctor;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,28 +42,28 @@ public class Appointments implements Serializable {
         this.idAppointments = idAppointments;
     }
 
-    public LocalDateTime getDateTimeAppointment() {
-        return dateTimeAppointment;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setDateTimeAppointment(LocalDateTime dateTimeAppointment) {
-        this.dateTimeAppointment = dateTimeAppointment;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
-    public Patient getPatientId() {
-        return patientId;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public void setPatientId(Patient patientId) {
-        this.patientId = patientId;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
-    public Doctor getDoctorId() {
-        return doctorId;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
-    public void setDoctorId(Doctor doctorId) {
-        this.doctorId = doctorId;
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 
     public AppointmentStatus getStatus() {
@@ -78,11 +80,5 @@ public class Appointments implements Serializable {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public void setPatient(Patient patient) {
-    }
-
-    public void setDoctor(Doctor doctor) {
     }
 }
