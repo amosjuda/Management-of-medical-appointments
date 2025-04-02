@@ -85,4 +85,34 @@ public class AppointmentsController {
         return ResponseEntity.status(HttpStatus.OK).body(appointmentO.get());
     }
 
+    @PutMapping("/appointment/{id}")
+    public ResponseEntity<Object> updateAppointments(@PathVariable(value="id") UUID id,
+                                                     @RequestBody AppointmentsRecordDto appointmentsRecordDto){
+        Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
+        if(appointmentO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+        }
+        var appointment = appointmentO.get();
+
+        // Update only non-null fields
+        if (appointmentsRecordDto.dateTime() != null) {
+            appointment.setDateTime(appointmentsRecordDto.dateTime());
+        }
+        if (appointmentsRecordDto.patientId() != null) {
+            Optional<Patient> patient = patientRepository.findById(appointmentsRecordDto.patientId());
+            patient.ifPresent(appointment::setPatient);  // Convert UUID to Patient
+        }
+        if (appointmentsRecordDto.doctorId() != null) {
+            Optional<Doctor> doctor = doctorRepository.findById(appointmentsRecordDto.doctorId());
+            doctor.ifPresent(appointment::setDoctor);  // Convert UUID to Doctor
+        }
+        if (appointmentsRecordDto.status() != null) {
+            appointment.setStatus(appointmentsRecordDto.status());
+        }
+        if (appointmentsRecordDto.notes() != null) {
+            appointment.setNotes(appointmentsRecordDto.notes());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(appointmentsRepository.save(appointment));
+    }
+
 }
