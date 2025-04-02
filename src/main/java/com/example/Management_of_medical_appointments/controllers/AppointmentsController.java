@@ -86,7 +86,7 @@ public class AppointmentsController {
     }
 
     @PutMapping("/appointment/{id}")
-    public ResponseEntity<Object> updateAppointments(@PathVariable(value="id") UUID id,
+    public ResponseEntity<Object> updateAppointment(@PathVariable(value="id") UUID id,
                                                      @RequestBody AppointmentsRecordDto appointmentsRecordDto){
         Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
         if(appointmentO.isEmpty()){
@@ -113,6 +113,16 @@ public class AppointmentsController {
             appointment.setNotes(appointmentsRecordDto.notes());
         }
         return ResponseEntity.status(HttpStatus.OK).body(appointmentsRepository.save(appointment));
+    }
+
+    @DeleteMapping("/appointment/{id}")
+    public ResponseEntity<Object> deleteAppointment(@PathVariable(value="id") UUID id) {
+        Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
+        if(appointmentO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+        }
+        appointmentsRepository.delete(appointmentO.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Doctor deleted successfully.");
     }
 
 }
