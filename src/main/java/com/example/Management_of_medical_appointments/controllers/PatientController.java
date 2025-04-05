@@ -42,8 +42,23 @@ public class PatientController {
     }
 
     @GetMapping("/patient")
-    public ResponseEntity<List<Patient>> getALLPatients() {
-        return ResponseEntity.status(HttpStatus.OK).body(patientRepository.findAll());
+    public ResponseEntity<CollectionModel<EntityModel<Patient>>> getALLPatients() {
+        try {
+            List<Patient> patients = patientRepository.findAll();
+
+            List<EntityModel<Patient>> patientResources = patients.stream()
+                    .map(patient -> EntityModel.of(patient)
+                            .add(linkTo(methodOn(PatientController.class).getOnePatient(patient.getIdPatient())).withSelfRel()))
+                    .toList();
+
+            CollectionModel<EntityModel<Patient>> collection = CollectionModel.of(patientResources);
+            collection.add(linkTo(methodOn(PatientController.class).getALLPatients()).withSelfRel());
+
+            return ResponseEntity.status(HttpStatus.OK).body(collection);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/patient/{id}")
