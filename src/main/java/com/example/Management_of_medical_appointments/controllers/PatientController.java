@@ -63,11 +63,21 @@ public class PatientController {
 
     @GetMapping("/patient/{id}")
     public ResponseEntity<Object> getOnePatient(@PathVariable(value="id") UUID id) {
-        Optional<Patient> patientO = patientRepository.findById(id);
-        if(patientO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+        try {
+            Optional<Patient> patientO = patientRepository.findById(id);
+            if (patientO.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+            }
+
+            var patient = patientO.get();
+            EntityModel<Patient> resource = EntityModel.of(patient);
+            resource.add(linkTo(methodOn(PatientController.class).getOnePatient(id)).withSelfRel());
+            resource.add(linkTo(methodOn(PatientController.class).getALLPatients()).withRel("all-patients"));
+
+            return ResponseEntity.ok(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching patient: " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(patientO.get());
     }
 
     @PutMapping("/patient/{id}")
