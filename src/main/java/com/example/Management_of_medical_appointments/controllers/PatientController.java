@@ -104,11 +104,16 @@ public class PatientController {
 
     @DeleteMapping("/patient/{id}")
     public ResponseEntity<Object> deletePatient(@PathVariable(value="id") UUID id) {
-        Optional<Patient> patient0 = patientRepository.findById(id);
-        if(patient0.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+        try {
+            Optional<Patient> patientO = patientRepository.findById(id);
+            if (patientO.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Patient not found.");
+            }
+            patientRepository.delete(patientO.get());
+
+            return ResponseEntity.ok("Patient deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting patient: " + e.getMessage());
         }
-        patientRepository.delete(patient0.get());
-        return ResponseEntity.status(HttpStatus.OK).body("patient deleted successfully.");
     }
 }
