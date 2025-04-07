@@ -6,6 +6,7 @@ import com.example.Management_of_medical_appointments.repositories.DoctorReposit
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +41,22 @@ public class DoctorController {
     }
 
     @GetMapping("/doctor")
-    public ResponseEntity<List<Doctor>> getALLDoctors() {
-        return ResponseEntity.status(HttpStatus.OK).body(doctorRepository.findAll());
+    public ResponseEntity<CollectionModel<EntityModel<Doctor>>> getALLDoctors() {
+        try {
+            List<Doctor> doctors = doctorRepository.findAll();
+
+            List<EntityModel<Doctor>> doctorResources = doctors.stream()
+                    .map(doctor -> EntityModel.of(doctor)
+                            .add(linkTo(methodOn(DoctorController.class).getOneDoctor(doctor.getIdDoctor())).withSelfRel()))
+                    .toList();
+
+            CollectionModel<EntityModel<Doctor>> collection = CollectionModel.of(doctorResources);
+            collection.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withSelfRel());
+
+            return ResponseEntity.status(HttpStatus.OK).body(collection);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/doctor/{id}")
