@@ -6,6 +6,7 @@ import com.example.Management_of_medical_appointments.repositories.DoctorReposit
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,16 +15,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 @RestController
 public class DoctorController {
     @Autowired
     DoctorRepository doctorRepository;
 
     @PostMapping("/doctor")
-    public ResponseEntity<Doctor> saveDoctor(@RequestBody @Valid DoctorRecordDto doctorRecordDto){
-        var doctor = new Doctor();
-        BeanUtils.copyProperties(doctorRecordDto, doctor);
-        return ResponseEntity.status(HttpStatus.CREATED).body(doctorRepository.save(doctor));
+    public ResponseEntity<Object> saveDoctor(@RequestBody @Valid DoctorRecordDto doctorRecordDto){
+        try{
+            var doctor = new Doctor();
+            BeanUtils.copyProperties(doctorRecordDto, doctor);
+            Doctor savedDoctor = doctorRepository.save(doctor);
+
+            EntityModel<Doctor> resource = EntityModel.of(savedDoctor);
+            resource.add(linkTo(methodOn(DoctorController.class).getOneDoctor(savedDoctor.getIdDoctor())).withSelfRel());
+            resource.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withRel("all-doctors"));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(resource.getContent());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving Patient: " + e.getMessage());
+        }
     }
 
     @GetMapping("/doctor")
