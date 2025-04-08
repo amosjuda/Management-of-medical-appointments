@@ -61,11 +61,19 @@ public class DoctorController {
 
     @GetMapping("/doctor/{id}")
     public ResponseEntity<Object> getOneDoctor(@PathVariable(value="id") UUID id) {
-        Optional<Doctor> doctorO = doctorRepository.findById(id);
-        if(doctorO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
+        try{
+            Optional<Doctor> doctorO = doctorRepository.findById(id);
+            if (doctorO.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
+            }
+            Doctor doctor = doctorO.get();
+            EntityModel<Doctor> resource = EntityModel.of(doctor);
+            resource.add(linkTo(methodOn(DoctorController.class).getOneDoctor(id)).withSelfRel());
+            resource.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withRel("all-doctors"));
+            return ResponseEntity.status(HttpStatus.OK).body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving doctor.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(doctorO.get());
     }
 
     @PutMapping("/doctor/{id}")
