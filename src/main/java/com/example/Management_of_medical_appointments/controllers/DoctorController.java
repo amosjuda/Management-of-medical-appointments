@@ -79,13 +79,21 @@ public class DoctorController {
     @PutMapping("/doctor/{id}")
     public ResponseEntity<Object> updateDoctor(@PathVariable(value="id") UUID id,
                                                @RequestBody @Valid DoctorRecordDto doctorRecordDto){
-        Optional<Doctor> doctorO = doctorRepository.findById(id);
-        if(doctorO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
+        try {
+            Optional<Doctor> doctorO = doctorRepository.findById(id);
+            if (doctorO.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
+            }
+            Doctor doctor = doctorO.get();
+            BeanUtils.copyProperties(doctorRecordDto, doctor);
+            Doctor updatedDoctor = doctorRepository.save(doctor);
+            EntityModel<Doctor> resource = EntityModel.of(updatedDoctor);
+            resource.add(linkTo(methodOn(DoctorController.class).getOneDoctor(id)).withSelfRel());
+            resource.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withRel("all-doctors"));
+            return ResponseEntity.ok(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating doctor.");
         }
-        var doctor = doctorO.get();
-        BeanUtils.copyProperties(doctorRecordDto, doctor);
-        return ResponseEntity.status(HttpStatus.OK).body(doctorRepository.save(doctor));
     }
 
     @DeleteMapping("/doctor/{id}")
