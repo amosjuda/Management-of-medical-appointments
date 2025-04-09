@@ -9,6 +9,7 @@ import com.example.Management_of_medical_appointments.repositories.DoctorReposit
 import com.example.Management_of_medical_appointments.repositories.PatientRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 public class AppointmentsController {
@@ -55,15 +58,12 @@ public class AppointmentsController {
                 appointment.setDoctor(doctor);
                 Appointments savedAppointment = appointmentsRepository.save(appointment);
 
-                AppointmentsRecordDto appointmentRecord = new AppointmentsRecordDto(
-                        savedAppointment.getDateTime(),
-                        savedAppointment.getPatient().getIdPatient(),
-                        savedAppointment.getDoctor().getIdDoctor(),
-                        savedAppointment.getStatus(),
-                        savedAppointment.getNotes()
-                );
+                EntityModel<Appointments> resource = EntityModel.of(savedAppointment);
+                UUID id = savedAppointment.getIdAppointments();
+                resource.add(linkTo(methodOn(AppointmentsController.class).getOneAppointment(id)).withSelfRel());
+                resource.add(linkTo(methodOn(AppointmentsController.class).getAllAppointments()).withRel("all-appointments"));
 
-                return ResponseEntity.status(HttpStatus.CREATED).body(appointmentRecord);
+                return ResponseEntity.status(HttpStatus.CREATED).body(resource);
             } catch (NoSuchElementException e){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             } catch (Exception e) {
