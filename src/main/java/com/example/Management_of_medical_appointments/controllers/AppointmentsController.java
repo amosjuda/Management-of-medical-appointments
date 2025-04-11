@@ -90,11 +90,19 @@ public class AppointmentsController {
 
     @GetMapping("/appointment/{id}")
     public ResponseEntity<Object> getOneAppointment(@PathVariable(value="id") UUID id) {
-        Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
-        if(appointmentO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+        try {
+            Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
+            if(appointmentO.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+            }
+
+            EntityModel<Appointments> resource = EntityModel.of(appointmentO.get());
+            resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(AppointmentsController.class).getAllAppointments()).withRel("all-appointments"));
+
+            return ResponseEntity.ok(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching appointment: " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(appointmentO.get());
     }
 
     @PutMapping("/appointment/{id}")
