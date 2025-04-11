@@ -108,31 +108,40 @@ public class AppointmentsController {
     @PutMapping("/appointment/{id}")
     public ResponseEntity<Object> updateAppointment(@PathVariable(value="id") UUID id,
                                                      @RequestBody AppointmentsRecordDto appointmentsRecordDto){
-        Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
-        if(appointmentO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
-        }
-        var appointment = appointmentO.get();
+        try {
+            Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
+            if (appointmentO.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+            }
+            var appointment = appointmentO.get();
 
-        // Update only non-null fields
-        if (appointmentsRecordDto.dateTime() != null) {
-            appointment.setDateTime(appointmentsRecordDto.dateTime());
+            // Update only non-null fields
+            if (appointmentsRecordDto.dateTime() != null) {
+                appointment.setDateTime(appointmentsRecordDto.dateTime());
+            }
+            if (appointmentsRecordDto.patientId() != null) {
+                Optional<Patient> patient = patientRepository.findById(appointmentsRecordDto.patientId());
+                patient.ifPresent(appointment::setPatient);  // Convert UUID to Patient
+            }
+            if (appointmentsRecordDto.doctorId() != null) {
+                Optional<Doctor> doctor = doctorRepository.findById(appointmentsRecordDto.doctorId());
+                doctor.ifPresent(appointment::setDoctor);  // Convert UUID to Doctor
+            }
+            if (appointmentsRecordDto.status() != null) {
+                appointment.setStatus(appointmentsRecordDto.status());
+            }
+            if (appointmentsRecordDto.notes() != null) {
+                appointment.setNotes(appointmentsRecordDto.notes());
+            }
+            Appointments updated = appointmentsRepository.save(appointment);
+
+            EntityModel<Appointments> resource = EntityModel.of(updated);
+            resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(AppointmentsController.class).getOneAppointment(updated.getIdAppointments())).withSelfRel());
+
+            return ResponseEntity.ok(resource);
+        }  catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating appointment: " + e.getMessage());
         }
-        if (appointmentsRecordDto.patientId() != null) {
-            Optional<Patient> patient = patientRepository.findById(appointmentsRecordDto.patientId());
-            patient.ifPresent(appointment::setPatient);  // Convert UUID to Patient
-        }
-        if (appointmentsRecordDto.doctorId() != null) {
-            Optional<Doctor> doctor = doctorRepository.findById(appointmentsRecordDto.doctorId());
-            doctor.ifPresent(appointment::setDoctor);  // Convert UUID to Doctor
-        }
-        if (appointmentsRecordDto.status() != null) {
-            appointment.setStatus(appointmentsRecordDto.status());
-        }
-        if (appointmentsRecordDto.notes() != null) {
-            appointment.setNotes(appointmentsRecordDto.notes());
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(appointmentsRepository.save(appointment));
     }
 
     @DeleteMapping("/appointment/{id}")
