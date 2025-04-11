@@ -9,7 +9,9 @@ import com.example.Management_of_medical_appointments.repositories.DoctorReposit
 import com.example.Management_of_medical_appointments.repositories.PatientRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -72,9 +75,18 @@ public class AppointmentsController {
     }
 
     @GetMapping("/appointment")
-    public ResponseEntity<List<Appointments>> getAllAppointments() {
-        return ResponseEntity.status(HttpStatus.OK).body(appointmentsRepository.findAll());
-    }
+    public ResponseEntity<Object> getAllAppointments() {
+        try {
+            List<EntityModel<Appointments>> appointments = appointmentsRepository.findAll().stream().map(app ->
+                    EntityModel.of(app,
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(AppointmentsController.class).getOneAppointment(app.getIdAppointments())).withSelfRel()
+                    )
+            ).collect(Collectors.toList());
+
+            return ResponseEntity.ok(appointments);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching appointments: " + e.getMessage());
+        }}
 
     @GetMapping("/appointment/{id}")
     public ResponseEntity<Object> getOneAppointment(@PathVariable(value="id") UUID id) {
