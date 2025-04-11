@@ -146,12 +146,16 @@ public class AppointmentsController {
 
     @DeleteMapping("/appointment/{id}")
     public ResponseEntity<Object> deleteAppointment(@PathVariable(value="id") UUID id) {
-        Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
-        if(appointmentO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+        try {
+            Optional<Appointments> appointmentO = appointmentsRepository.findById(id);
+            if(appointmentO.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment not found.");
+            }
+            appointmentsRepository.delete(appointmentO.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Appointment deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting appointment: " + e.getMessage());
         }
-        appointmentsRepository.delete(appointmentO.get());
-        return ResponseEntity.status(HttpStatus.OK).body("Doctor deleted successfully.");
     }
 
 }
