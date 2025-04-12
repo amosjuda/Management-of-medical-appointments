@@ -27,6 +27,7 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
    - Atualização de dados pessoais.
    - Exclusão de registros.
    - Busca por pacientes.
+   - - Listar todos os pacientes.
 
 2. **Gerenciamento de Médicos**:
    - Inserir um médico no banco.
@@ -36,10 +37,11 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
    - Listar todos os médicos.
 
 4. **Gestão de Consultas**:
+   - Adição e exclusão de consultas
    - Marcação e atualização de consultas.
    - Controle e acompanhamento de horários.
 
-5. **Flexibilidade de Uso**:
+6. **Flexibilidade de Uso**:
    - Adapta-se tanto a clínicas quanto a hospitais.
 
 ---
