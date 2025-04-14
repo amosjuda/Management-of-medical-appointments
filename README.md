@@ -18,7 +18,6 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
 - **IDE**: Intellij.
 - **Postman**: Teste da API.
 
-
 ---
 
 ## Funcionalidades
@@ -59,10 +58,18 @@ Certifique-se de ter os seguintes requisitos instalados:
    ```bash
    git clone https://github.com/seu-usuario/Management-of-medical-appointments
 .git
-   
-### Espaço reservado para incluir capturas de tela relevantes ao longo do desenvolvimento.
 
-⚠️ Os prints serão adicionados à medida que o projeto evoluir, ilustrando funcionalidades e interfaces importantes.
+---
+
+## Espaço reservado para incluir capturas de tela relevantes ao longo do desenvolvimento.
+
+- Caminho para o screanshot de configurações e dependências desse projeto feito no start.spring.io.
+https://github.com/amosjuda/Management-of-medical-appointments/blob/main/src/images/Spring-Initializr-%5Bstart.spring.io%5D.png
+
+- Caminho para os screenshots dos testes bem-sucedidos realizados no Postman durante o desenvolvimento.
+https://github.com/amosjuda/Management-of-medical-appointments/tree/main/src/images
+
+---
 
 ### Aceitação de Feedbacks e Contribuições
 Contribuições para o desenvolvimento do sistema são muito bem-vindas!
