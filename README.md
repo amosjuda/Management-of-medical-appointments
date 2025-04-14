@@ -26,7 +26,7 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
    - Atualização de dados pessoais.
    - Exclusão de registros.
    - Busca por pacientes.
-   - - Listar todos os pacientes.
+   - Listar todos os pacientes.
 
 2. **Gerenciamento de Médicos**:
    - Inserir um médico no banco.
