@@ -1,4 +1,4 @@
-package com.example.Management_of_medical_appointments.dtos;
+package com.amosjuda.Management_of_medical_appointments.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 

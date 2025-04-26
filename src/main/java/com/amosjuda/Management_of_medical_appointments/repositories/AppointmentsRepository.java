@@ -1,8 +1,8 @@
-package com.example.Management_of_medical_appointments.repositories;
+package com.amosjuda.Management_of_medical_appointments.repositories;
 
-import com.example.Management_of_medical_appointments.models.Appointments;
-import com.example.Management_of_medical_appointments.models.Doctor;
-import com.example.Management_of_medical_appointments.models.Patient;
+import com.amosjuda.Management_of_medical_appointments.models.Appointments;
+import com.amosjuda.Management_of_medical_appointments.models.Doctor;
+import com.amosjuda.Management_of_medical_appointments.models.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

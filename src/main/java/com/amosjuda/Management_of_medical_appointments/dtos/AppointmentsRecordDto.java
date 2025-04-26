@@ -1,6 +1,6 @@
-package com.example.Management_of_medical_appointments.dtos;
+package com.amosjuda.Management_of_medical_appointments.dtos;
 
-import com.example.Management_of_medical_appointments.models.AppointmentStatus;
+import com.amosjuda.Management_of_medical_appointments.models.AppointmentStatus;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 

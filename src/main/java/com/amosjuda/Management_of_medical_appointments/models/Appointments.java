@@ -1,4 +1,4 @@
-package com.example.Management_of_medical_appointments.models;
+package com.amosjuda.Management_of_medical_appointments.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

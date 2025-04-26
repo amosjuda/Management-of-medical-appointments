@@ -1,8 +1,8 @@
-package com.example.Management_of_medical_appointments.controllers;
+package com.amosjuda.Management_of_medical_appointments.controllers;
 
-import com.example.Management_of_medical_appointments.dtos.DoctorRecordDto;
-import com.example.Management_of_medical_appointments.models.Doctor;
-import com.example.Management_of_medical_appointments.repositories.DoctorRepository;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRecordDto;
+import com.amosjuda.Management_of_medical_appointments.models.Doctor;
+import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

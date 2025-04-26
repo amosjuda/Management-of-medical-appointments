@@ -1,4 +1,4 @@
-package com.example.Management_of_medical_appointments.config;
+package com.amosjuda.Management_of_medical_appointments.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

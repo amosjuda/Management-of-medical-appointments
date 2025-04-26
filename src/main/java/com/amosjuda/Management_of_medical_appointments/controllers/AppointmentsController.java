@@ -1,15 +1,14 @@
-package com.example.Management_of_medical_appointments.controllers;
+package com.amosjuda.Management_of_medical_appointments.controllers;
 
-import com.example.Management_of_medical_appointments.dtos.AppointmentsRecordDto;
-import com.example.Management_of_medical_appointments.models.Appointments;
-import com.example.Management_of_medical_appointments.models.Doctor;
-import com.example.Management_of_medical_appointments.models.Patient;
-import com.example.Management_of_medical_appointments.repositories.AppointmentsRepository;
-import com.example.Management_of_medical_appointments.repositories.DoctorRepository;
-import com.example.Management_of_medical_appointments.repositories.PatientRepository;
+import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsRecordDto;
+import com.amosjuda.Management_of_medical_appointments.models.Appointments;
+import com.amosjuda.Management_of_medical_appointments.models.Doctor;
+import com.amosjuda.Management_of_medical_appointments.models.Patient;
+import com.amosjuda.Management_of_medical_appointments.repositories.AppointmentsRepository;
+import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
+import com.amosjuda.Management_of_medical_appointments.repositories.PatientRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;

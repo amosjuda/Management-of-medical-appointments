@@ -1,4 +1,4 @@
-package com.example.Management_of_medical_appointments;
+package com.amosjuda.Management_of_medical_appointments;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
