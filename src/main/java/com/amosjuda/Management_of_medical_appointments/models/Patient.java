@@ -2,6 +2,8 @@ package com.amosjuda.Management_of_medical_appointments.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -14,59 +16,34 @@ public class Patient implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idPatient;
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     private String name;
 
+    @Getter
+    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Getter
+    @Setter
+    @Column(nullable = false)
+    private String phone;
+
+    @Getter
+    @Setter
     @Column(nullable = false)
     private LocalDate birthdate;
 
+    @Getter
+    @Setter
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Appointments> appointments;
 
-    public UUID getIdPatient() {
-        return idPatient;
-    }
-
-    public void setIdPatient(UUID idPatient) {
-        this.idPatient = idPatient;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public LocalDate getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public List<Appointments> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(List<Appointments> appointments) {
-        this.appointments = appointments;
-    }
 }
