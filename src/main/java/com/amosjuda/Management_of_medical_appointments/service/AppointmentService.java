@@ -4,15 +4,16 @@ import com.amosjuda.Management_of_medical_appointments.models.Appointments;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface AppointmentService {
     Appointments saveAppointment(Appointments Appointments);
 
     List<Appointments> getALLAppointments();
 
-    Optional<Appointments> getOneAppointmentById(Long id);
+    Optional<Appointments> getOneAppointmentById(UUID id);
 
-    Appointments updateAppointment(Long id, Appointments Appointments);
+    Appointments updateAppointment(UUID id, Appointments Appointments);
 
-    void deleteAppointment(Long id);
+    void deleteAppointment(UUID id);
 }
