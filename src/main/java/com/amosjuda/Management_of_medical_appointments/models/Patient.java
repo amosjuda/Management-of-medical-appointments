@@ -11,39 +11,39 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TB_PATIENT")
+@Getter
+@Setter
+@Table(name = "tb_patient")
 public class Patient implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    public Patient() {}
+
+    public Patient(UUID idPatient, String name, String email, String phone, LocalDate birthdate) {
+        this.idPatient = idPatient;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.birthdate = birthdate;
+    }
+
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idPatient;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String name;
 
-    @Getter
-    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String phone;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private LocalDate birthdate;
 
-    @Getter
-    @Setter
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Appointments> appointments;
-
 }

@@ -10,9 +10,20 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TB_APPOINTMENTS")
+@Table(name = "tb_appointments")
 public class Appointments implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    public Appointments(){}
+
+    public Appointments(UUID idAppointments, LocalDateTime dateTime, Patient patient, Doctor doctor, AppointmentStatus status, String notes) {
+        this.idAppointments = idAppointments;
+        this.dateTime = dateTime;
+        this.patient = patient;
+        this.doctor = doctor;
+        this.status = status;
+        this.notes = notes;
+    }
 
     @Id
     @Getter

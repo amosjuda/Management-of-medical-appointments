@@ -10,9 +10,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "TB_DOCTOR")
+@Table(name = "tb_doctor")
 public class Doctor implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    public Doctor(){}
+
+    public Doctor(UUID idDoctor, String name, String specialty, String email) {
+        this.idDoctor = idDoctor;
+        this.name = name;
+        this.specialty = specialty;
+        this.email = email;
+    }
 
     @Id
     @Getter
