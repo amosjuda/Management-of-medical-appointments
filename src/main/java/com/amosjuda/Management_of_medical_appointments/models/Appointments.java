@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "tb_appointments")
 public class Appointments implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -26,37 +28,26 @@ public class Appointments implements Serializable {
     }
 
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idAppointments;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private LocalDateTime dateTime;
 
-    @Getter
-    @Setter
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     @JsonManagedReference
     private Patient patient;
 
-    @Getter
-    @Setter
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     @JsonManagedReference
     private Doctor doctor;
 
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AppointmentStatus status;
 
-    @Getter
-    @Setter
     private String notes;
 
 }

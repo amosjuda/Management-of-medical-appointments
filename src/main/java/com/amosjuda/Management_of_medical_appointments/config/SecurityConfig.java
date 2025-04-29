@@ -21,7 +21,6 @@ public class SecurityConfig {
                         .requestMatchers("/appointments/**").permitAll()
                         .anyRequest().authenticated()
                 );
-
         return http.build();
     }
 }

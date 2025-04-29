@@ -1,19 +1,19 @@
 package com.amosjuda.Management_of_medical_appointments.service;
 
-import com.amosjuda.Management_of_medical_appointments.models.Appointments;
+import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface AppointmentService {
-    Appointments saveAppointment(Appointments Appointments);
+    AppointmentsResponseDto saveAppointment(AppointmentsRequestDto dto);
 
-    List<Appointments> getALLAppointments();
+    List<AppointmentsResponseDto> getALLAppointments();
 
-    Optional<Appointments> getOneAppointmentById(UUID id);
+    AppointmentsResponseDto getOneAppointmentById(UUID id);
 
-    Appointments updateAppointment(UUID id, Appointments Appointments);
+    AppointmentsResponseDto updateAppointment(UUID id, AppointmentsRequestDto dto);
 
     void deleteAppointment(UUID id);
 }
