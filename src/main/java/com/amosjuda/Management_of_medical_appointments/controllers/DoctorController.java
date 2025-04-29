@@ -1,12 +1,11 @@
 package com.amosjuda.Management_of_medical_appointments.controllers;
 
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRecordDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
-import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
+import com.amosjuda.Management_of_medical_appointments.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,94 +18,40 @@ import java.util.UUID;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
+@RequestMapping("/doctors")
 public class DoctorController {
-    @Autowired
-    DoctorRepository doctorRepository;
 
-    @PostMapping("/doctor")
-    public ResponseEntity<Object> saveDoctor(@RequestBody @Valid DoctorRecordDto doctorRecordDto){
-        try{
-            var doctor = new Doctor();
-            BeanUtils.copyProperties(doctorRecordDto, doctor);
-            Doctor savedDoctor = doctorRepository.save(doctor);
+    private final DoctorService service;
 
-            EntityModel<Doctor> resource = EntityModel.of(savedDoctor);
-            resource.add(linkTo(methodOn(DoctorController.class).getOneDoctor(savedDoctor.getIdDoctor())).withSelfRel());
-            resource.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withRel("all-doctors"));
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(resource.getContent());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving Patient: " + e.getMessage());
-        }
+    public DoctorController(DoctorService service) {
+        this.service = service;
     }
 
-    @GetMapping("/doctor")
-    public ResponseEntity<CollectionModel<EntityModel<Doctor>>> getALLDoctors() {
-        try {
-            List<Doctor> doctors = doctorRepository.findAll();
-
-            List<EntityModel<Doctor>> doctorResources = doctors.stream()
-                    .map(doctor -> EntityModel.of(doctor)
-                            .add(linkTo(methodOn(DoctorController.class).getOneDoctor(doctor.getIdDoctor())).withSelfRel()))
-                    .toList();
-
-            CollectionModel<EntityModel<Doctor>> collection = CollectionModel.of(doctorResources);
-            collection.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withSelfRel());
-
-            return ResponseEntity.status(HttpStatus.OK).body(collection);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    @PostMapping
+    public ResponseEntity<DoctorResponseDto> saveDoctor(@Valid @RequestBody DoctorRequestDto dto){
+        DoctorResponseDto saveTheDoctor = service.saveDoctor(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saveTheDoctor);
     }
 
-    @GetMapping("/doctor/{id}")
-    public ResponseEntity<Object> getOneDoctor(@PathVariable(value="id") UUID id) {
-        try{
-            Optional<Doctor> doctorO = doctorRepository.findById(id);
-            if (doctorO.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
-            }
-            Doctor doctor = doctorO.get();
-            EntityModel<Doctor> resource = EntityModel.of(doctor);
-            resource.add(linkTo(methodOn(DoctorController.class).getOneDoctor(id)).withSelfRel());
-            resource.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withRel("all-doctors"));
-            return ResponseEntity.status(HttpStatus.OK).body(resource);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving doctor.");
-        }
+    @GetMapping
+    public ResponseEntity<List<DoctorResponseDto>> getALLDoctors() {
+       return ResponseEntity.ok(service.getALLDoctors());
     }
 
-    @PutMapping("/doctor/{id}")
-    public ResponseEntity<Object> updateDoctor(@PathVariable(value="id") UUID id,
-                                               @RequestBody @Valid DoctorRecordDto doctorRecordDto){
-        try {
-            Optional<Doctor> doctorO = doctorRepository.findById(id);
-            if (doctorO.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
-            }
-            Doctor doctor = doctorO.get();
-            BeanUtils.copyProperties(doctorRecordDto, doctor);
-            Doctor updatedDoctor = doctorRepository.save(doctor);
-            EntityModel<Doctor> resource = EntityModel.of(updatedDoctor);
-            resource.add(linkTo(methodOn(DoctorController.class).getOneDoctor(id)).withSelfRel());
-            resource.add(linkTo(methodOn(DoctorController.class).getALLDoctors()).withRel("all-doctors"));
-            return ResponseEntity.ok(resource);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating doctor.");
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<DoctorResponseDto> getOneDoctor(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.getOneDoctorById(id));
     }
 
-    @DeleteMapping("/doctor/{id}")
-    public ResponseEntity<Object> deleteDoctor(@PathVariable(value="id") UUID id) {
-        try {
-            Optional<Doctor> doctorO = doctorRepository.findById(id);
-            if (doctorO.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Doctor not found.");
-            }
-            doctorRepository.delete(doctorO.get());
-            return ResponseEntity.status(HttpStatus.OK).body("Doctor deleted successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting doctor.");
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<DoctorResponseDto> updateDoctor(@PathVariable UUID id,
+                                                          @Valid @RequestBody DoctorRequestDto dto){
+        return ResponseEntity.ok(service.updateDoctor(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DoctorResponseDto> deleteDoctor(@PathVariable UUID id) {
+        service.deleteDoctor(id);
+        return ResponseEntity.noContent().build();
     }
 }

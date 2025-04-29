@@ -1,5 +1,8 @@
 package com.amosjuda.Management_of_medical_appointments.service.Impl;
 
+import com.amosjuda.Management_of_medical_appointments.config.DoctorMapper;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
 import com.amosjuda.Management_of_medical_appointments.service.DoctorService;
@@ -7,49 +10,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
+
     private final DoctorRepository doctorRepository;
+    private final DoctorMapper mapper;
 
     @Autowired
-    public DoctorServiceImpl(DoctorRepository doctorRepository) {
+    public DoctorServiceImpl(DoctorRepository doctorRepository, DoctorMapper mapper) {
         this.doctorRepository = doctorRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public Doctor saveDoctor(Doctor doctor) {
-        return doctorRepository.save(doctor);
+    public DoctorResponseDto saveDoctor(DoctorRequestDto dto) {
+        Doctor doctor = mapper.toEntity(dto);
+        return mapper.toDto(doctorRepository.save(doctor));
     }
 
     @Override
-    public List<Doctor> getALLDoctors() {
-        return doctorRepository.findAll();
+    public List<DoctorResponseDto> getALLDoctors() {
+        return doctorRepository.findAll().stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     @Override
-    public Optional<Doctor> getOneDoctorById(UUID id) {
-        return doctorRepository.findById(id);
+    public DoctorResponseDto getOneDoctorById(UUID id) {
+        return doctorRepository.findById(id)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
     }
 
     @Override
-    public Doctor updateDoctor(UUID id, Doctor doctor) {
-        Optional<Doctor> existingDoctor = doctorRepository.findById(id);
-        if(existingDoctor.isPresent()){
-            Doctor doctorToUpdate = existingDoctor.get();
-            doctorToUpdate.setName(doctor.getName());
-            doctorToUpdate.setSpecialty(doctor.getSpecialty());
-            doctorToUpdate.setEmail(doctor.getEmail());
-            return doctorRepository.save(doctorToUpdate);
-        } else {
-            throw new RuntimeException("Query not found with id: " + id);
-        }
+    public DoctorResponseDto updateDoctor(UUID id, DoctorRequestDto dto) {
+        Doctor doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+            doctor.setName(doctor.getName());
+            doctor.setSpecialty(doctor.getSpecialty());
+            doctor.setEmail(doctor.getEmail());
+
+            return mapper.toDto(doctorRepository.save(doctor));
     }
 
     @Override
     public void deleteDoctor(UUID id) {
+        if (!doctorRepository.existsById(id)) {
+            throw new RuntimeException("Doctor not found with id: " + id);
+        }
         doctorRepository.deleteById(id);
     }
 }

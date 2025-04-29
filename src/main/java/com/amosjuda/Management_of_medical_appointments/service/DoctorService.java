@@ -1,19 +1,19 @@
 package com.amosjuda.Management_of_medical_appointments.service;
 
-import com.amosjuda.Management_of_medical_appointments.models.Doctor;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.DoctorResponseDto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface DoctorService {
-    Doctor saveDoctor(Doctor Doctor);
+    DoctorResponseDto saveDoctor(DoctorRequestDto dto);
 
-    List<Doctor> getALLDoctors();
+    List<DoctorResponseDto> getALLDoctors();
 
-    Optional<Doctor> getOneDoctorById(UUID id);
+    DoctorResponseDto getOneDoctorById(UUID id);
 
-    Doctor updateDoctor(UUID id, Doctor Doctor);
+    DoctorResponseDto updateDoctor(UUID id, DoctorRequestDto dto);
 
     void deleteDoctor(UUID id);
 }

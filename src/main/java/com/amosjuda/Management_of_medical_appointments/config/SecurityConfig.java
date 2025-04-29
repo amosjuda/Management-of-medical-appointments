@@ -16,9 +16,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)  //Temporarily disable CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/doctor/**").permitAll()  //Allows public access to this endpoint
+                        .requestMatchers("/doctors/**").permitAll()  //Allows public access to this endpoint
                         .requestMatchers("/patients/**").permitAll()
-                        .requestMatchers("/appointment/**").permitAll()
+                        .requestMatchers("/appointments/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "tb_doctor")
 public class Doctor implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -24,27 +26,18 @@ public class Doctor implements Serializable {
     }
 
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID idDoctor;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String name;
 
-    @Getter
-    @Setter
     @Column(nullable = false)
     private String specialty;
 
-    @Getter
-    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Getter
-    @Setter
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     @JsonBackReference
     private List<Appointments> appointments;
