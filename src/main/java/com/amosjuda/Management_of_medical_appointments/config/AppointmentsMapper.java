@@ -17,6 +17,7 @@ public interface AppointmentsMapper {
     @Mapping(target = "patient", source = "patient")
     Appointments toEntity(AppointmentsRequestDto dto, Doctor doctor, Patient patient);
 
+    @Mapping(source = "idAppointments", target = "id")
     @Mapping(source = "doctor", target = "doctor")
     @Mapping(source = "patient", target = "patient")
     AppointmentsResponseDto toResponseDto(Appointments appointment);

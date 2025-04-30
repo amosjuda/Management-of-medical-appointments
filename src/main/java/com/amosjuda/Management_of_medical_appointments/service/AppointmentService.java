@@ -16,4 +16,6 @@ public interface AppointmentService {
     AppointmentsResponseDto updateAppointment(UUID id, AppointmentsRequestDto dto);
 
     void deleteAppointment(UUID id);
+
+    void cancelAppointment(UUID id);
 }

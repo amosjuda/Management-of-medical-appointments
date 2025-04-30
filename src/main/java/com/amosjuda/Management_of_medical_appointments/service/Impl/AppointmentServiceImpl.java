@@ -3,6 +3,8 @@ package com.amosjuda.Management_of_medical_appointments.service.Impl;
 import com.amosjuda.Management_of_medical_appointments.config.AppointmentsMapper;
 import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsRequestDto;
 import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
+import com.amosjuda.Management_of_medical_appointments.exceptions.ResourceNotFoundException;
+import com.amosjuda.Management_of_medical_appointments.models.AppointmentStatus;
 import com.amosjuda.Management_of_medical_appointments.models.Appointments;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import com.amosjuda.Management_of_medical_appointments.models.Patient;
@@ -82,5 +84,18 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new EntityNotFoundException("Appointment not found");
         }
         appointmentsRepository.deleteById(id);
+    }
+
+    @Override
+    public void cancelAppointment(UUID id) {
+        Appointments appointment = appointmentsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new IllegalStateException("Appointment already cancelled");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentsRepository.save(appointment);
     }
 }

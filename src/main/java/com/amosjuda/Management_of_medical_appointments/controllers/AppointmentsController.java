@@ -61,4 +61,10 @@ public class AppointmentsController {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelAppointment(@PathVariable UUID id) {
+        appointmentService.cancelAppointment(id);
+        return ResponseEntity.noContent().build();
+    }
 }
