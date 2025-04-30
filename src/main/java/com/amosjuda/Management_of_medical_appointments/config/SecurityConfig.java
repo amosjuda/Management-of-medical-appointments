@@ -14,13 +14,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)  //Temporarily disable CSRF
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/doctors/**").permitAll()  //Allows public access to this endpoint
-                        .requestMatchers("/patients/**").permitAll()
-                        .requestMatchers("/appointments/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/doctors/**",
+                                "/patients/**",
+                                "/appointments/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
+
         return http.build();
     }
 }

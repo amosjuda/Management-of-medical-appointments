@@ -13,10 +13,11 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
 ---
 
 ## Tecnologias Utilizadas
-- **Linguagem de programação**: Java (versão **JavaSE-17**).
+- **Linguagem de programação**: Java (versão **JavaSE-21**).
 - **Banco de dados**: PostgreSQL - pgAdmin 4.
 - **IDE**: Intellij.
 - **Postman**: Teste da API.
+- **IA-chatgpt**: Organização e identificação de erros.
 
 ---
 
@@ -39,6 +40,7 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
    - Adição e exclusão de consultas
    - Marcação e atualização de consultas.
    - Controle e acompanhamento de horários.
+   - Cancelamento de consultas.
 
 6. **Flexibilidade de Uso**:
    - Adapta-se tanto a clínicas quanto a hospitais.
@@ -48,7 +50,7 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
 ## Instalação e Configuração
 ### Pré-requisitos
 Certifique-se de ter os seguintes requisitos instalados:
-- JavaSE-17 LTS version.
+- JavaSE-21 LTS version.
 - PostgreSQL - pgAdmin 4.
 - Intellij IDE.
 - Postman.
