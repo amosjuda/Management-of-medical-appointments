@@ -73,6 +73,8 @@ https://github.com/amosjuda/Management-of-medical-appointments/blob/main/src/ima
 - Caminho para os screenshots dos testes bem-sucedidos realizados no Postman durante o desenvolvimento.
 https://github.com/amosjuda/Management-of-medical-appointments/tree/main/src/images
 
+- Caminho para os screenshots do swagger.
+https://github.com/amosjuda/Management-of-medical-appointments/tree/main/src/images
 ---
 
 ### Aceitação de Feedbacks e Contribuições
