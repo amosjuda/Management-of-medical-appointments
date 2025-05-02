@@ -17,8 +17,10 @@ O projeto busca ser uma solução eficiente e prática, melhorando o fluxo de tr
 - **Banco de dados**: PostgreSQL - pgAdmin 4.
 - **IDE**: Intellij.
 - **Postman**: Teste da API.
-- **IA-chatgpt**: Organização e identificação de erros.
-
+- **IA-chatgpt**: Organização, identificação e resolução de erros.
+- **Swagger**: Documentar de forma compreensível.
+- **SpringBoot**: Simplificação do desenvolvimento automatizando tarefas com suas diversas funcionalidades.
+- **Lombok**: Diminuição de código.
 ---
 
 ## Funcionalidades
