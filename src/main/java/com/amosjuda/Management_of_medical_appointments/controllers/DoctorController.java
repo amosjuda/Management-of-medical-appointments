@@ -1,8 +1,8 @@
 package com.amosjuda.Management_of_medical_appointments.controllers;
 
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.DoctorRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.DoctorResponseDto;
 import com.amosjuda.Management_of_medical_appointments.service.DoctorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/doctors")

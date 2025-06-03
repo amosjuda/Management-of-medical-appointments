@@ -1,7 +1,7 @@
 package com.amosjuda.Management_of_medical_appointments.config;
 
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.DoctorRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.DoctorResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

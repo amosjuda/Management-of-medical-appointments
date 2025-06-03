@@ -1,4 +1,4 @@
-package com.amosjuda.Management_of_medical_appointments.dtos;
+package com.amosjuda.Management_of_medical_appointments.dtos.response;
 
 import com.amosjuda.Management_of_medical_appointments.models.AppointmentStatus;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;

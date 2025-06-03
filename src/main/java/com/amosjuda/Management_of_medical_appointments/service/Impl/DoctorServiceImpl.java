@@ -1,8 +1,8 @@
 package com.amosjuda.Management_of_medical_appointments.service.Impl;
 
 import com.amosjuda.Management_of_medical_appointments.config.DoctorMapper;
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.DoctorResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.DoctorRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.DoctorResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
 import com.amosjuda.Management_of_medical_appointments.service.DoctorService;

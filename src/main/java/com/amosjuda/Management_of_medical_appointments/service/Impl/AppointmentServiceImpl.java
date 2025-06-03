@@ -1,8 +1,8 @@
 package com.amosjuda.Management_of_medical_appointments.service.Impl;
 
 import com.amosjuda.Management_of_medical_appointments.config.AppointmentsMapper;
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.AppointmentsRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
 import com.amosjuda.Management_of_medical_appointments.exceptions.ResourceNotFoundException;
 import com.amosjuda.Management_of_medical_appointments.models.AppointmentStatus;
 import com.amosjuda.Management_of_medical_appointments.models.Appointments;

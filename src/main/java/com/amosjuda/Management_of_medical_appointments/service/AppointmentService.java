@@ -1,7 +1,7 @@
 package com.amosjuda.Management_of_medical_appointments.service;
 
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.AppointmentsRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.amosjuda.Management_of_medical_appointments.dtos;
+package com.amosjuda.Management_of_medical_appointments.dtos.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

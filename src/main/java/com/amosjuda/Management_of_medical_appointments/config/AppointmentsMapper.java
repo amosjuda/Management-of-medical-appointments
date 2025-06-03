@@ -1,7 +1,7 @@
 package com.amosjuda.Management_of_medical_appointments.config;
 
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.AppointmentsRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Appointments;
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import com.amosjuda.Management_of_medical_appointments.models.Patient;

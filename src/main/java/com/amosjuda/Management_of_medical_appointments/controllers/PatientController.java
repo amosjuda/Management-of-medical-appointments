@@ -1,8 +1,8 @@
 package com.amosjuda.Management_of_medical_appointments.controllers;
 
-import com.amosjuda.Management_of_medical_appointments.dtos.AppointmentsResponseDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.PatientRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.PatientResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.PatientRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.PatientResponseDto;
 import com.amosjuda.Management_of_medical_appointments.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

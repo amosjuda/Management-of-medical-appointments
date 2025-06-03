@@ -1,4 +1,4 @@
-package com.amosjuda.Management_of_medical_appointments.dtos;
+package com.amosjuda.Management_of_medical_appointments.dtos.request;
 
 import com.amosjuda.Management_of_medical_appointments.models.AppointmentStatus;
 import io.swagger.v3.oas.annotations.media.Schema;

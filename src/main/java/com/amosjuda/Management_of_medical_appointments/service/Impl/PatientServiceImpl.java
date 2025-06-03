@@ -1,8 +1,8 @@
 package com.amosjuda.Management_of_medical_appointments.service.Impl;
 
 import com.amosjuda.Management_of_medical_appointments.config.PatientMapper;
-import com.amosjuda.Management_of_medical_appointments.dtos.PatientRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.PatientResponseDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.PatientRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.PatientResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Patient;
 import com.amosjuda.Management_of_medical_appointments.repositories.PatientRepository;
 import com.amosjuda.Management_of_medical_appointments.service.PatientService;
