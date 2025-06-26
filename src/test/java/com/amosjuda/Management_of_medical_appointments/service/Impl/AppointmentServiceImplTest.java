@@ -162,9 +162,36 @@ class AppointmentServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @DisplayName("getOneAppointmentById tests")
-    void getOneAppointmentById() {
+    class getOneAppointmentById {
+        @Test
+        @DisplayName("Should return appointment when ID exists")
+        void shouldReturnAppointment_WhenIdExists() {
+            mockAppointmentById(Optional.of(fixture.appointment));
+            when(appointmentsMapper.toResponseDto(fixture.appointment)).thenReturn(fixture.responseDto);
+
+            assertThat(appointmentService.getOneAppointmentById(fixture.APPOINTMENT_ID))
+                    .isEqualTo(fixture.responseDto);
+
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verify(appointmentsMapper).toResponseDto(fixture.appointment);
+        }
+        @Test
+        @DisplayName("Should throw RuntimeException when ID does not exist")
+        void shouldThrowRuntimeException_WhenIdNotFound() {
+            mockAppointmentById(Optional.empty());
+
+            assertRuntimeException("Appointment not found",
+                    () -> appointmentService.getOneAppointmentById(fixture.APPOINTMENT_ID));
+
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verifyNoInteractions(appointmentsMapper);
+        }
+
+        private void mockAppointmentById(Optional<Appointments> appointments){
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(appointments);
+        }
     }
 
     @Test
