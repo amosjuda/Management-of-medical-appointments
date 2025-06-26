@@ -22,13 +22,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
 
 /*
  * Unit test class for {@link AppointmentServiceImpl}.
@@ -128,9 +131,35 @@ class AppointmentServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @DisplayName("GetALLAppointments tests")
-    void getALLAppointments() {
+    class getALLAppointments {
+        @Test
+        @DisplayName("Should return an appointmentList when data exists")
+        void shouldReturnAppointmentsList_WhenDataExists() {
+            mockRepositoryFindAll(List.of(fixture.appointment));
+            when(appointmentsMapper.toResponseDto(fixture.appointment)).thenReturn(fixture.responseDto);
+
+            List<AppointmentsResponseDto> result = appointmentService.getALLAppointments();
+
+            assertThat(result).hasSize(1).containsExactly(fixture.responseDto);
+            verify(appointmentsRepository).findAll();
+            verify(appointmentsMapper).toResponseDto(fixture.appointment);
+        }
+
+        @Test
+        @DisplayName("Should return empty list when there are no appointments")
+        void ShouldReturnEmptyList_WhenNoAppointmentsExist() {
+            mockRepositoryFindAll(Collections.emptyList());
+
+            assertThat(appointmentService.getALLAppointments()).isEmpty();
+            verify(appointmentsRepository).findAll();
+            verifyNoInteractions(appointmentsMapper);
+        }
+
+        private void mockRepositoryFindAll(List<Appointments> appointments) {
+            when(appointmentsRepository.findAll()).thenReturn(appointments);
+        }
     }
 
     @Test
