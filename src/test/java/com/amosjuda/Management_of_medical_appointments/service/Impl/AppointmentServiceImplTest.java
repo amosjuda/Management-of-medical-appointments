@@ -177,6 +177,7 @@ class AppointmentServiceImplTest {
             verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
             verify(appointmentsMapper).toResponseDto(fixture.appointment);
         }
+
         @Test
         @DisplayName("Should throw RuntimeException when ID does not exist")
         void shouldThrowRuntimeException_WhenIdNotFound() {
@@ -194,9 +195,77 @@ class AppointmentServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @DisplayName("UpdateAppointment tests")
-    void updateAppointment() {
+    class updateAppointment {
+        @Test
+        @DisplayName("It should update appointment successfully when all data is valid")
+        void shouldUpdateAppointmentSuccessfully_WhenAllDataIsValid() {
+            AppointmentsRequestDto requestDto = fixture.createValidRequestDto();
+            mockSuccessfulUpdate();
+
+            AppointmentsResponseDto result = appointmentService.updateAppointment(fixture.APPOINTMENT_ID, requestDto);
+
+            assertThat(result).isEqualTo(fixture.responseDto);
+            assertAppointmentUpdated(requestDto);
+            verifyUpdateInteractions();
+        }
+
+        @Test
+        @DisplayName("Should throw EntityNotFoundException when appointment does not exist")
+        void shouldThrowEntityNotFoundException_WhenAppointmentNotFound() {
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.empty());
+
+            assertEntityNotFound("Appointment not found",
+                    () -> appointmentService.updateAppointment(fixture.APPOINTMENT_ID, fixture.createValidRequestDto()));
+
+            verifyNoInteractions(doctorRepository, patientRepository, appointmentsMapper);
+        }
+
+        @Test
+        @DisplayName("Should throw EntityNotFoundException when doctor does not exist during update")
+        void shouldThrowEntityNotFoundException_WhenDoctorNotFoundDuringUpdate() {
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.of(fixture.appointment));
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.empty());
+
+            assertEntityNotFound("Doctor not found",
+                    () -> appointmentService.updateAppointment(fixture.APPOINTMENT_ID, fixture.createValidRequestDto()));
+        }
+
+        @Test
+        @DisplayName("Should throw EntityNotFoundException when patient does not exist during update")
+        void shouldThrowEntityNotFoundException_WhenPatientNotFoundDuringUpdate() {
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.of(fixture.appointment));
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.of(fixture.doctor));
+            when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.empty());
+
+            assertEntityNotFound("Patient not found",
+                    () -> appointmentService.updateAppointment(fixture.APPOINTMENT_ID, fixture.createValidRequestDto()));
+
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verify(patientRepository).findById(fixture.PATIENT_ID);
+            verifyNoMoreInteractions(appointmentsRepository, doctorRepository, patientRepository);
+        }
+
+        private void mockSuccessfulUpdate() {
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.of(fixture.appointment));
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.of(fixture.doctor));
+            when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.of(fixture.patient));
+            when(appointmentsMapper.toResponseDto(fixture.appointment)).thenReturn(fixture.responseDto);;
+            when(appointmentsRepository.save(fixture.appointment)).thenReturn(fixture.appointment);
+        }
+        private void assertAppointmentUpdated(AppointmentsRequestDto requestDto) {
+            assertThat(fixture.appointment.getDoctor()).isEqualTo(fixture.doctor);
+            assertThat(fixture.appointment.getPatient()).isEqualTo(fixture.patient);
+            assertThat(fixture.appointment.getDateTime()).isEqualTo(requestDto.getDateTime());
+        }
+        private void verifyUpdateInteractions() {
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verify(patientRepository).findById(fixture.PATIENT_ID);
+            verify(appointmentsRepository).save(fixture.appointment);
+        }
     }
 
     @Test
