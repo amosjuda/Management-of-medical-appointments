@@ -268,9 +268,39 @@ class AppointmentServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @DisplayName("DaveAppointments tests")
-    void deleteAppointment() {
+    class deleteAppointment {
+        @Test
+        @DisplayName("Should delete appointment when ID exists")
+        void shouldDeleteAppointment_WhenIdExists() {
+            mockAppointmentExists(true);
+
+            appointmentService.deleteAppointment(fixture.APPOINTMENT_ID);
+
+            verifyDeleteFlow();
+        }
+
+        @Test
+        @DisplayName("Should throw EntityNotFoundException when ID does not exist")
+        void shouldThrowEntityNotFoundException_WhenIdNotFound() {
+            mockAppointmentExists(false);
+
+            assertEntityNotFound("Appointment not found",
+                    () -> appointmentService.deleteAppointment(fixture.APPOINTMENT_ID));
+
+            verify(appointmentsRepository).existsById(fixture.APPOINTMENT_ID);
+            verify(appointmentsRepository, never()).deleteById(any());
+        }
+
+        private void mockAppointmentExists(boolean exists) {
+            when(appointmentsRepository.existsById(fixture.APPOINTMENT_ID)).thenReturn(exists);
+        }
+
+        private void verifyDeleteFlow() {
+            verify(appointmentsRepository).existsById(fixture.APPOINTMENT_ID);
+            verify(appointmentsRepository).deleteById(fixture.APPOINTMENT_ID);
+        }
     }
 
     @Test
