@@ -12,10 +12,7 @@ import com.amosjuda.Management_of_medical_appointments.repositories.Appointments
 import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
 import com.amosjuda.Management_of_medical_appointments.repositories.PatientRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,10 +41,10 @@ import static org.mockito.Mockito.*;
  * - Nested classes for logical grouping
  *
  * @author Amós Judá
- * @version 1.0
  * @since 2025
  */
 @ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("AppointmentServiceImpl - Unitary Tests")
 class AppointmentServiceImplTest {
 
@@ -70,26 +67,37 @@ class AppointmentServiceImplTest {
         fixture = new TestFixture();
     }
 
+    @AfterEach
+    void tearDown() { reset(appointmentsRepository, doctorRepository, patientRepository, appointmentsMapper); }
+
     @Nested
     @DisplayName("SaveAppointments tests")
+    @Order(1)
     class saveAppointment {
         @Test
+        @Tag("happy-path")
         @DisplayName("It should save appointment successfully when all data is valid")
         void shouldSaveAppointmentSuccessfully_WhenAllDataIsValid() {
+            //Arrange
             AppointmentsRequestDto requestDto = fixture.createValidRequestDto();
             mockSuccessfulSave();
 
+            //Act
             AppointmentsResponseDto result = appointmentService.saveAppointment(requestDto);
 
+            //Assert
             assertThat(result).isEqualTo(fixture.responseDto);
             verifySuccessfulSaveFlow(requestDto);
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw EntityNotFoundException when doctor is not found")
         void shouldThrowEntityNotFoundException_WhenDoctorNotFound(){
+            //Arrange
             when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.empty());
 
+            //Act & Assert
             assertEntityNotFound("Doctor not found",
                     () -> appointmentService.saveAppointment(fixture.createValidRequestDto()));
 
@@ -98,12 +106,14 @@ class AppointmentServiceImplTest {
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw EntityNotFoundException when patient does not exist")
         void shouldThrowEntityNotFoundException_WhenPatientNotFound() {
+            //Arrange
             when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.of(fixture.doctor));
             when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.empty());
 
-            // Act & Assert
+            //Act & Assert
             assertEntityNotFound("Patient not found",
                     () -> appointmentService.saveAppointment(fixture.createValidRequestDto()));
 
@@ -130,26 +140,34 @@ class AppointmentServiceImplTest {
     }
 
     @Nested
+    @Order(2)
     @DisplayName("GetALLAppointments tests")
     class getALLAppointments {
         @Test
+        @Tag("happy-path")
         @DisplayName("Should return an appointmentList when data exists")
         void shouldReturnAppointmentsList_WhenDataExists() {
+            //Arrange
             mockRepositoryFindAll(List.of(fixture.appointment));
             when(appointmentsMapper.toResponseDto(fixture.appointment)).thenReturn(fixture.responseDto);
 
+            //Act
             List<AppointmentsResponseDto> result = appointmentService.getALLAppointments();
 
+            //Assert
             assertThat(result).hasSize(1).containsExactly(fixture.responseDto);
             verify(appointmentsRepository).findAll();
             verify(appointmentsMapper).toResponseDto(fixture.appointment);
         }
 
         @Test
+        @Tag("edge-case")
         @DisplayName("Should return empty list when there are no appointments")
         void ShouldReturnEmptyList_WhenNoAppointmentsExist() {
+            //Arrange
             mockRepositoryFindAll(Collections.emptyList());
 
+            //Act & Assert
             assertThat(appointmentService.getALLAppointments()).isEmpty();
             verify(appointmentsRepository).findAll();
             verifyNoInteractions(appointmentsMapper);
@@ -161,26 +179,34 @@ class AppointmentServiceImplTest {
     }
 
     @Nested
+    @Order(3)
     @DisplayName("getOneAppointmentById tests")
     class getOneAppointmentById {
         @Test
+        @Tag("happy-path")
         @DisplayName("Should return appointment when ID exists")
         void shouldReturnAppointment_WhenIdExists() {
+            //Arrange
             mockAppointmentById(Optional.of(fixture.appointment));
             when(appointmentsMapper.toResponseDto(fixture.appointment)).thenReturn(fixture.responseDto);
 
+            //Act
             assertThat(appointmentService.getOneAppointmentById(fixture.APPOINTMENT_ID))
                     .isEqualTo(fixture.responseDto);
 
+            //Assert
             verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
             verify(appointmentsMapper).toResponseDto(fixture.appointment);
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw RuntimeException when ID does not exist")
         void shouldThrowRuntimeException_WhenIdNotFound() {
+            //Arrange
             mockAppointmentById(Optional.empty());
 
+            //Act & Assert
             assertRuntimeException("Appointment not found",
                     () -> appointmentService.getOneAppointmentById(fixture.APPOINTMENT_ID));
 
@@ -194,26 +220,34 @@ class AppointmentServiceImplTest {
     }
 
     @Nested
+    @Order(4)
     @DisplayName("UpdateAppointment tests")
     class updateAppointment {
         @Test
+        @Tag("happy-path")
         @DisplayName("It should update appointment successfully when all data is valid")
         void shouldUpdateAppointmentSuccessfully_WhenAllDataIsValid() {
+            //Arrange
             AppointmentsRequestDto requestDto = fixture.createValidRequestDto();
             mockSuccessfulUpdate();
 
+            //Act
             AppointmentsResponseDto result = appointmentService.updateAppointment(fixture.APPOINTMENT_ID, requestDto);
 
+            //Assert
             assertThat(result).isEqualTo(fixture.responseDto);
             assertAppointmentUpdated(requestDto);
             verifyUpdateInteractions();
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw EntityNotFoundException when appointment does not exist")
         void shouldThrowEntityNotFoundException_WhenAppointmentNotFound() {
+            //Arrange
             when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.empty());
 
+            //Act & Assert
             assertEntityNotFound("Appointment not found",
                     () -> appointmentService.updateAppointment(fixture.APPOINTMENT_ID, fixture.createValidRequestDto()));
 
@@ -221,22 +255,28 @@ class AppointmentServiceImplTest {
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw EntityNotFoundException when doctor does not exist during update")
         void shouldThrowEntityNotFoundException_WhenDoctorNotFoundDuringUpdate() {
+            //Arrange
             when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.of(fixture.appointment));
             when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.empty());
 
+            //Act & Assert
             assertEntityNotFound("Doctor not found",
                     () -> appointmentService.updateAppointment(fixture.APPOINTMENT_ID, fixture.createValidRequestDto()));
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw EntityNotFoundException when patient does not exist during update")
         void shouldThrowEntityNotFoundException_WhenPatientNotFoundDuringUpdate() {
+            //Arrange
             when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.of(fixture.appointment));
             when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.of(fixture.doctor));
             when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.empty());
 
+            //Act & Assert
             assertEntityNotFound("Patient not found",
                     () -> appointmentService.updateAppointment(fixture.APPOINTMENT_ID, fixture.createValidRequestDto()));
 
@@ -267,23 +307,31 @@ class AppointmentServiceImplTest {
     }
 
     @Nested
+    @Order(5)
     @DisplayName("DaveAppointments tests")
     class deleteAppointment {
         @Test
+        @Tag("happy-path")
         @DisplayName("Should delete appointment when ID exists")
         void shouldDeleteAppointment_WhenIdExists() {
+            //Arrange
             mockAppointmentExists(true);
 
+            //Act
             appointmentService.deleteAppointment(fixture.APPOINTMENT_ID);
 
+            //Assert
             verifyDeleteFlow();
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw EntityNotFoundException when ID does not exist")
         void shouldThrowEntityNotFoundException_WhenIdNotFound() {
+            //Arrange
             mockAppointmentExists(false);
 
+            //Act & Assert
             assertEntityNotFound("Appointment not found",
                     () -> appointmentService.deleteAppointment(fixture.APPOINTMENT_ID));
 
@@ -302,24 +350,32 @@ class AppointmentServiceImplTest {
     }
 
     @Nested
+    @Order(6)
     @DisplayName("CancelAppointment tests")
     class cancelAppointment {
         @Test
+        @Tag("happy-path")
         @DisplayName("You must cancel the appointment when it is in SCHEDULED status")
         void shouldCancelAppointment_WhenStatusIsScheduled() {
+            //Arrange
             mockAppointmentWithStatus(AppointmentStatus.SCHEDULED);
 
+            //Act
             appointmentService.cancelAppointment(fixture.APPOINTMENT_ID);
 
+            //Assert
             assertThat(fixture.appointment.getStatus()).isEqualTo(AppointmentStatus.CANCELLED);
             verifyCancelFlow();
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw IllegalStateException when appointment is already cancelled")
         void shouldThrowIllegalStateException_WhenAlreadyCancelled() {
+            //Arrange
             mockAppointmentWithStatus(AppointmentStatus.CANCELLED);
 
+            //Act & Assert
             assertIllegalState("Appointment already cancelled",
                     () -> appointmentService.cancelAppointment(fixture.APPOINTMENT_ID));
 
@@ -328,10 +384,13 @@ class AppointmentServiceImplTest {
         }
 
         @Test
+        @Tag("error-handling")
         @DisplayName("Should throw ResourceNotFoundException when appointment does not exist")
         void shouldThrowResourceNotFoundException_WhenAppointmentNotFound() {
+            //Arrange
             when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.empty());
 
+            //Act & Assert
             assertResourceNotFound("Appointment not found with id: " + fixture.APPOINTMENT_ID,
                     () -> appointmentService.cancelAppointment(fixture.APPOINTMENT_ID));
 
@@ -399,7 +458,7 @@ class AppointmentServiceImplTest {
         private Patient createMockPatient() {
             Patient p = new Patient();
             p.setIdPatient(PATIENT_ID);
-            p.setName("Jhon Silva");
+            p.setName("John Silva");
             return p;
         }
 
