@@ -31,8 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
-
 /*
  * Unit test class for {@link AppointmentServiceImpl}.
  *
@@ -303,9 +301,53 @@ class AppointmentServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @DisplayName("CancelAppointment tests")
-    void cancelAppointment() {
+    class cancelAppointment {
+        @Test
+        @DisplayName("You must cancel the appointment when it is in SCHEDULED status")
+        void shouldCancelAppointment_WhenStatusIsScheduled() {
+            mockAppointmentWithStatus(AppointmentStatus.SCHEDULED);
+
+            appointmentService.cancelAppointment(fixture.APPOINTMENT_ID);
+
+            assertThat(fixture.appointment.getStatus()).isEqualTo(AppointmentStatus.CANCELLED);
+            verifyCancelFlow();
+        }
+
+        @Test
+        @DisplayName("Should throw IllegalStateException when appointment is already cancelled")
+        void shouldThrowIllegalStateException_WhenAlreadyCancelled() {
+            mockAppointmentWithStatus(AppointmentStatus.CANCELLED);
+
+            assertIllegalState("Appointment already cancelled",
+                    () -> appointmentService.cancelAppointment(fixture.APPOINTMENT_ID));
+
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verify(appointmentsRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("Should throw ResourceNotFoundException when appointment does not exist")
+        void shouldThrowResourceNotFoundException_WhenAppointmentNotFound() {
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.empty());
+
+            assertResourceNotFound("Appointment not found with id: " + fixture.APPOINTMENT_ID,
+                    () -> appointmentService.cancelAppointment(fixture.APPOINTMENT_ID));
+
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verify(appointmentsRepository, never()).save(any());
+        }
+
+        private void mockAppointmentWithStatus(AppointmentStatus status) {
+            fixture.appointment.setStatus(status);
+            when(appointmentsRepository.findById(fixture.APPOINTMENT_ID)).thenReturn(Optional.of(fixture.appointment));
+        }
+
+        private void verifyCancelFlow() {
+            verify(appointmentsRepository).findById(fixture.APPOINTMENT_ID);
+            verify(appointmentsRepository).save(fixture.appointment);
+        }
     }
 
     private void assertEntityNotFound(String expectedMessage, Runnable executable) {
