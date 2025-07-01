@@ -459,6 +459,8 @@ class AppointmentServiceImplTest {
             Patient p = new Patient();
             p.setIdPatient(PATIENT_ID);
             p.setName("John Silva");
+            p.setEmail("antonnisilva@email.com");
+            p.setPhone("(88)988448844");
             return p;
         }
 
