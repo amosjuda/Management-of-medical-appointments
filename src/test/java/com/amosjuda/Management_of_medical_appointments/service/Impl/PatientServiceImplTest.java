@@ -12,8 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -117,6 +120,39 @@ class PatientServiceImplTest {
     @Nested
     @Order(2)
     class getALLPatients {
+        @Test
+        @Tag("Happy-path")
+        @DisplayName("Should return patient list when data exists")
+        void shouldReturnPatientList_WhenDataExists() {
+            //Arrange
+            mockRepositoryFindAll(List.of(fixture.patient));
+            when(patientMapper.toDto(fixture.patient)).thenReturn(fixture.responseDto);
+
+            //Act
+            List<PatientResponseDto> result = patientService.getALLPatients();
+
+            //Assert
+            assertThat(result).hasSize(1).containsExactly(fixture.responseDto);
+            verify(patientRepository).findAll();
+            verify(patientMapper).toDto(fixture.patient);
+        }
+
+        @Test
+        @Tag("edge-case")
+        @DisplayName("Should return empty list when there are no patients")
+        void ShouldReturnEmptyList_WhenNoPatientsExist() {
+            //Arrange
+            mockRepositoryFindAll(Collections.emptyList());
+
+            //Act & Assert
+            assertThat(patientService.getALLPatients()).isEmpty();
+            verify(patientRepository).findAll();
+            verifyNoInteractions(patientMapper);
+        }
+
+        private void mockRepositoryFindAll(List<Patient> patients) {
+            when(patientRepository.findAll()).thenReturn(patients);
+        }
     }
 
     @Nested
