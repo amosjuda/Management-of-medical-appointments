@@ -153,8 +153,8 @@ class PatientServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should return multiple patients when multiple exist")
         @Tag("happy-path")
+        @DisplayName("Should return multiple patients when multiple exist")
         void shouldReturnMultiplePatients_WhenMultipleExist() {
             // Arrange
             Patient secondPatient = fixture.createSecondPatient();
