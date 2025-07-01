@@ -9,6 +9,7 @@ import com.amosjuda.Management_of_medical_appointments.models.Patient;
 import com.amosjuda.Management_of_medical_appointments.repositories.PatientRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -276,8 +277,8 @@ class PatientServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should update all patient fields correctly")
         @Tag("field-validation")
+        @DisplayName("Should update all patient fields correctly")
         void shouldUpdateAllPatientFieldsCorrectly() {
             // Arrange
             PatientRequestDto requestDto = fixture.createValidUpdateRequestDto();
@@ -323,6 +324,60 @@ class PatientServiceImplTest {
     @Order(5)
     @DisplayName("DeletePatient tests")
     class deletePatient {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("Should delete patient when ID exists")
+        void shouldDeletePatient_WhenIdExists() {
+            // Arrange
+            mockPatientExists(true);
+
+            // Act
+            patientService.deletePatient(fixture.PATIENT_ID);
+
+            // Assert
+            verifyDeleteFlow();
+        }
+
+        @Test
+        @Tag("error-handling")
+        @DisplayName("Should throw RuntimeException when ID does not exist")
+        void shouldThrowRuntimeException_WhenIdNotFound() {
+            // Arrange
+            mockPatientExists(false);
+
+            // Act & Assert
+            assertRuntimeException("Patient not found with id: " + fixture.PATIENT_ID,
+                    () -> patientService.deletePatient(fixture.PATIENT_ID));
+
+            verify(patientRepository).existsById(fixture.PATIENT_ID);
+            verify(patientRepository, never()).deleteById(any());
+        }
+
+        @Test
+        @Tag("integration")
+        @DisplayName("Should call repository methods in correct order during delete")
+        void shouldCallRepositoryMethodsInCorrectOrder_DuringDelete() {
+            // Arrange
+            mockPatientExists(true);
+
+            // Act
+            patientService.deletePatient(fixture.PATIENT_ID);
+
+            // Assert
+            InOrder inOrder = inOrder(patientRepository);
+            inOrder.verify(patientRepository).existsById(fixture.PATIENT_ID);
+            inOrder.verify(patientRepository).deleteById(fixture.PATIENT_ID);
+        }
+
+        private void mockPatientExists(boolean exists) {
+            when(patientRepository.existsById(fixture.PATIENT_ID)).thenReturn(exists);
+        }
+
+        private void verifyDeleteFlow() {
+            verify(patientRepository).existsById(fixture.PATIENT_ID);
+            verify(patientRepository).deleteById(fixture.PATIENT_ID);
+        }
+
     }
 
     private void assertRuntimeException(String expectedMessage, Runnable executable) {
