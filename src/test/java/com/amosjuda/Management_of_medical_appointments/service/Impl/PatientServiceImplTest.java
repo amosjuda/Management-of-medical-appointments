@@ -1,9 +1,7 @@
 package com.amosjuda.Management_of_medical_appointments.service.Impl;
 
 import com.amosjuda.Management_of_medical_appointments.config.PatientMapper;
-import com.amosjuda.Management_of_medical_appointments.dtos.request.AppointmentsRequestDto;
 import com.amosjuda.Management_of_medical_appointments.dtos.request.PatientRequestDto;
-import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
 import com.amosjuda.Management_of_medical_appointments.dtos.response.PatientResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Patient;
 import com.amosjuda.Management_of_medical_appointments.repositories.PatientRepository;
@@ -12,16 +10,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
@@ -150,6 +145,30 @@ class PatientServiceImplTest {
             verifyNoInteractions(patientMapper);
         }
 
+        @Test
+        @DisplayName("Should return multiple patients when multiple exist")
+        @Tag("happy-path")
+        void shouldReturnMultiplePatients_WhenMultipleExist() {
+            // Arrange
+            Patient secondPatient = fixture.createSecondPatient();
+            PatientResponseDto secondResponseDto = fixture.createSecondResponseDto();
+
+            mockRepositoryFindAll(List.of(fixture.patient, secondPatient));
+            when(patientMapper.toDto(fixture.patient)).thenReturn(fixture.responseDto);
+            when(patientMapper.toDto(secondPatient)).thenReturn(secondResponseDto);
+
+            // Act
+            List<PatientResponseDto> result = patientService.getALLPatients();
+
+            // Assert
+            assertThat(result)
+                    .hasSize(2)
+                    .containsExactly(fixture.responseDto, secondResponseDto);
+
+            verify(patientRepository).findAll();
+            verify(patientMapper).toDto(fixture.patient);
+            verify(patientMapper).toDto(secondPatient);
+        }
         private void mockRepositoryFindAll(List<Patient> patients) {
             when(patientRepository.findAll()).thenReturn(patients);
         }
