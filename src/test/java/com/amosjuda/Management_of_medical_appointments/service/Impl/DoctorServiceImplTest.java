@@ -13,7 +13,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.reset;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 class DoctorServiceImplTest {
 
@@ -34,10 +36,59 @@ class DoctorServiceImplTest {
     @AfterEach
     void tearDown() { reset(doctorRepository, doctorMapper); }
 
-    @Test
+    @Nested
     @Order(1)
     @DisplayName("SaveDoctor tests")
-    void saveDoctor() {
+    class saveDoctor {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("Should save save doctor successfully when all data is valid")
+        void shouldSaveDoctorSuccessfully_WhenAllDataIsValid() {
+            //Arrange
+            DoctorRequestDto requestDto = fixture.createValidRequestDto();
+            mockSuccessfulSave();
+
+            //Act
+            DoctorResponseDto result = doctorService.saveDoctor(requestDto);
+
+            //Assert
+            assertThat(result).isEqualTo(fixture.responseDto);
+            verifySuccessfulSaveFlow(requestDto);
+        }
+
+        @Test
+        @Tag("integration")
+        @DisplayName("Should handle mapper conversion correctly during save")
+        void shouldHandleMapperConversionCorrectly_DuringSave() {
+            // Arrange
+            DoctorRequestDto requestDto = fixture.createValidRequestDto();
+            when(doctorMapper.toEntity(requestDto)).thenReturn(fixture.doctor);
+            when(doctorRepository.save(fixture.doctor)).thenReturn(fixture.doctor);
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+
+            // Act
+            DoctorResponseDto result = doctorService.saveDoctor(requestDto);
+
+            // Assert
+            assertThat(result).isNotNull();
+            assertThat(result).isEqualTo(fixture.responseDto);
+
+            verify(doctorMapper).toEntity(requestDto);
+            verify(doctorRepository).save(fixture.doctor);
+            verify(doctorMapper).toDto(fixture.doctor);
+        }
+
+        private void mockSuccessfulSave() {
+            when(doctorMapper.toEntity(any(DoctorRequestDto.class))).thenReturn(fixture.doctor);
+            when(doctorRepository.save(fixture.doctor)).thenReturn(fixture.doctor);
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+        }
+
+        private void verifySuccessfulSaveFlow(DoctorRequestDto requestDto) {
+            verify(doctorMapper).toEntity(requestDto);
+            verify(doctorRepository).save(fixture.doctor);
+            verify(doctorMapper).toDto(fixture.doctor);
+        }
     }
 
     @Test
