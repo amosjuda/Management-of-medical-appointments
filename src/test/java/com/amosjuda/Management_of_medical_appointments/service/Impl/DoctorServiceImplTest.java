@@ -6,17 +6,23 @@ import com.amosjuda.Management_of_medical_appointments.dtos.response.DoctorRespo
 import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@DisplayName("DoctorServiceImpl - Unitary Tests")
 class DoctorServiceImplTest {
 
     @Mock
@@ -91,10 +97,67 @@ class DoctorServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @Order(2)
     @DisplayName("GetALLDoctor tests")
-    void getALLDoctors() {
+    class getALLDoctors {
+        @Test
+        @Tag("Happy-path")
+        @DisplayName("Should return doctor list when data exists")
+        void shouldReturnDoctorList_WhenDataExists() {
+            //Arrange
+            mockRepositoryFindAll(List.of(fixture.doctor));
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+
+            //Act
+            List<DoctorResponseDto> result = doctorService.getALLDoctors();
+
+            //Assert
+            assertThat(result).hasSize(1).containsExactly(fixture.responseDto);
+            verify(doctorRepository).findAll();
+            verify(doctorMapper).toDto(fixture.doctor);
+        }
+
+        @Test
+        @Tag("edge-case")
+        @DisplayName("Should return empty list when there are no doctors")
+        void ShouldReturnEmptyList_WhenNoDoctorsExist() {
+            //Arrange
+            mockRepositoryFindAll(Collections.emptyList());
+
+            //Act & Assert
+            assertThat(doctorService.getALLDoctors()).isEmpty();
+            verify(doctorRepository).findAll();
+            verifyNoInteractions(doctorMapper);
+        }
+
+        @Test
+        @Tag("happy-path")
+        @DisplayName("Should return multiple doctors when multiple exist")
+        void shouldReturnMultipleDoctors_WhenMultipleExist() {
+            // Arrange
+            Doctor secondDoctor = fixture.createSecondDoctor();
+            DoctorResponseDto secondResponseDto = fixture.createSecondResponseDto();
+
+            mockRepositoryFindAll(List.of(fixture.doctor, secondDoctor));
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+            when(doctorMapper.toDto(secondDoctor)).thenReturn(secondResponseDto);
+
+            // Act
+            List<DoctorResponseDto> result = doctorService.getALLDoctors();
+
+            // Assert
+            assertThat(result)
+                    .hasSize(2)
+                    .containsExactly(fixture.responseDto, secondResponseDto);
+
+            verify(doctorRepository).findAll();
+            verify(doctorMapper).toDto(fixture.doctor);
+            verify(doctorMapper).toDto(secondDoctor);
+        }
+        private void mockRepositoryFindAll(List<Doctor> doctor) {
+            when(doctorRepository.findAll()).thenReturn(doctor);
+        }
     }
 
     @Test
