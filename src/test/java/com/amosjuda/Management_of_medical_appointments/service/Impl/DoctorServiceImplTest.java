@@ -53,14 +53,14 @@ class DoctorServiceImplTest {
         void shouldSaveDoctorSuccessfully_WhenAllDataIsValid() {
             //Arrange
             DoctorRequestDto requestDto = fixture.createValidRequestDto();
-            mockSuccessfulSave();
+            mockSuccessfulSave(fixture.doctor, fixture.responseDto);
 
             //Act
             DoctorResponseDto result = doctorService.saveDoctor(requestDto);
 
             //Assert
             assertThat(result).isEqualTo(fixture.responseDto);
-            verifySuccessfulSaveFlow(requestDto);
+            verifySuccessfulSaveFlow(requestDto, fixture.doctor);
         }
 
         @Test
@@ -85,16 +85,16 @@ class DoctorServiceImplTest {
             verify(doctorMapper).toDto(fixture.doctor);
         }
 
-        private void mockSuccessfulSave() {
-            when(doctorMapper.toEntity(any(DoctorRequestDto.class))).thenReturn(fixture.doctor);
-            when(doctorRepository.save(fixture.doctor)).thenReturn(fixture.doctor);
-            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+        private void mockSuccessfulSave(Doctor doctorToSave, DoctorResponseDto expectedResponse) {
+            when(doctorMapper.toEntity(any(DoctorRequestDto.class))).thenReturn(doctorToSave);
+            when(doctorRepository.save(doctorToSave)).thenReturn(doctorToSave);
+            when(doctorMapper.toDto(doctorToSave)).thenReturn(expectedResponse);
         }
 
-        private void verifySuccessfulSaveFlow(DoctorRequestDto requestDto) {
+        private void verifySuccessfulSaveFlow(DoctorRequestDto requestDto, Doctor expectedDoctor) {
             verify(doctorMapper).toEntity(requestDto);
-            verify(doctorRepository).save(fixture.doctor);
-            verify(doctorMapper).toDto(fixture.doctor);
+            verify(doctorRepository).save(expectedDoctor);
+            verify(doctorMapper).toDto(expectedDoctor);
         }
     }
 
@@ -218,10 +218,86 @@ class DoctorServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @Order(4)
     @DisplayName("UpdateDoctor tests")
-    void updateDoctor() {
+    class updateDoctor {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("It should update doctor successfully when all data is valid")
+        void shouldUpdateDoctorSuccessfully_WhenAllDataIsValid() {
+            //Arrange
+            DoctorRequestDto requestDto = fixture.createValidRequestDto();
+            mockSuccessfulUpdate();
+
+            //Act
+            DoctorResponseDto result = doctorService.updateDoctor(fixture.DOCTOR_ID, requestDto);
+
+            //Assert
+            assertThat(result).isEqualTo(fixture.responseDto);
+            assertDoctorUpdated(requestDto);
+            verifyUpdateInteractions();
+        }
+
+        @Test
+        @Tag("error-handling")
+        @DisplayName("Should throw RuntimeException when doctor does not exist")
+        void shouldThrowRuntimeException_WhenDoctorNotFound() {
+            //Arrange
+            DoctorRequestDto requestDto = fixture.createValidUpdateRequestDto();
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertRuntimeException("Doctor not found",
+                    () -> doctorService.updateDoctor(fixture.DOCTOR_ID, requestDto));
+
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verify(doctorRepository, never()).save(any());
+            verifyNoInteractions(doctorMapper);
+        }
+
+        @Test
+        @Tag("field-validation")
+        @DisplayName("Should update all doctor fields correctly")
+        void shouldUpdateAllDoctorFieldsCorrectly() {
+            // Arrange
+            DoctorRequestDto requestDto = fixture.createValidUpdateRequestDto();
+            Doctor originalDoctorEntity = fixture.createMockDoctor();
+            Doctor updatedDoctorEntity = fixture.createUpdatedDoctorEntity();
+            DoctorResponseDto expectedResponseDto = fixture.createValidUpdateResponseDto();
+
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.of(originalDoctorEntity));
+            when(doctorRepository.save(any(Doctor.class))).thenReturn(updatedDoctorEntity);
+            when(doctorMapper.toDto(updatedDoctorEntity)).thenReturn(expectedResponseDto);
+
+            // Act
+            DoctorResponseDto result = doctorService.updateDoctor(fixture.DOCTOR_ID, requestDto);
+
+            // Assert
+            assertThat(result).isNotNull().isEqualTo(expectedResponseDto);
+
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verify(doctorRepository).save(originalDoctorEntity);
+            verify(doctorMapper).toDto(updatedDoctorEntity);
+        }
+
+        private void mockSuccessfulUpdate() {
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(Optional.of(fixture.doctor));
+            when(doctorRepository.save(fixture.doctor)).thenReturn(fixture.doctor);
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+        }
+
+        private void assertDoctorUpdated(DoctorRequestDto requestDto) {
+            assertThat(fixture.doctor.getName()).isEqualTo(requestDto.getName());
+            assertThat(fixture.doctor.getEmail()).isEqualTo(requestDto.getEmail());
+            assertThat(fixture.doctor.getSpecialty()).isEqualTo(requestDto.getSpecialty());
+        }
+
+        private void verifyUpdateInteractions() {
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verify(doctorRepository).save(fixture.doctor);
+            verify(doctorMapper).toDto(fixture.doctor);
+        }
     }
 
     @Test
@@ -294,10 +370,26 @@ class DoctorServiceImplTest {
 
         DoctorResponseDto createSecondResponseDto() {
             DoctorResponseDto dto = new DoctorResponseDto();
-            dto.setId(DOCTOR_ID);
+            dto.setId(SECOND_DOCTOR_ID);
             dto.setName("Joe Santos");
             dto.setEmail("joe@email.com");
             dto.setSpecialty("orthopedist");
+            return dto;
+        }
+        Doctor createUpdatedDoctorEntity() {
+            Doctor d = new Doctor();
+            d.setIdDoctor(DOCTOR_ID);
+            d.setName("John Silva Updated");
+            d.setEmail("john.updated@email.com");
+            d.setSpecialty(DOCTOR_SPECIALTY);
+            return d;
+        }
+        DoctorResponseDto createValidUpdateResponseDto() {
+            DoctorResponseDto dto = new DoctorResponseDto();
+            dto.setId(DOCTOR_ID);
+            dto.setName("John Silva Updated");
+            dto.setEmail("john.updated@email.com");
+            dto.setSpecialty(DOCTOR_SPECIALTY);
             return dto;
         }
     }
