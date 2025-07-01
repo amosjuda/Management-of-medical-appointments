@@ -7,6 +7,7 @@ import com.amosjuda.Management_of_medical_appointments.models.Doctor;
 import com.amosjuda.Management_of_medical_appointments.repositories.DoctorRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -300,10 +301,63 @@ class DoctorServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @Order(5)
     @DisplayName("DeleteDoctor tests")
-    void deleteDoctor() {
+    class deleteDoctor {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("Should delete doctor when ID exists")
+        void shouldDeleteDoctor_WhenIdExists() {
+            // Arrange
+            mockDoctorExists(true);
+
+            // Act
+            doctorService.deleteDoctor(fixture.DOCTOR_ID);
+
+            // Assert
+            verifyDeleteFlow();
+        }
+
+        @Test
+        @Tag("error-handling")
+        @DisplayName("Should throw RuntimeException when ID does not exist")
+        void shouldThrowRuntimeException_WhenIdNotFound() {
+            // Arrange
+            mockDoctorExists(false);
+
+            // Act & Assert
+            assertRuntimeException("Doctor not found with id: " + fixture.DOCTOR_ID,
+                    () -> doctorService.deleteDoctor(fixture.DOCTOR_ID));
+
+            verify(doctorRepository).existsById(fixture.DOCTOR_ID);
+            verify(doctorRepository, never()).deleteById(any());
+        }
+
+        @Test
+        @Tag("integration")
+        @DisplayName("Should call repository methods in correct order during delete")
+        void shouldCallRepositoryMethodsInCorrectOrder_DuringDelete() {
+            // Arrange
+            mockDoctorExists(true);
+
+            // Act
+            doctorService.deleteDoctor(fixture.DOCTOR_ID);
+
+            // Assert
+            InOrder inOrder = inOrder(doctorRepository);
+            inOrder.verify(doctorRepository).existsById(fixture.DOCTOR_ID);
+            inOrder.verify(doctorRepository).deleteById(fixture.DOCTOR_ID);
+        }
+
+        private void mockDoctorExists(boolean exists) {
+            when(doctorRepository.existsById(fixture.DOCTOR_ID)).thenReturn(exists);
+        }
+
+        private void verifyDeleteFlow() {
+            verify(doctorRepository).existsById(fixture.DOCTOR_ID);
+            verify(doctorRepository).deleteById(fixture.DOCTOR_ID);
+        }
     }
 
     private void assertRuntimeException(String expectedMessage, Runnable executable) {
