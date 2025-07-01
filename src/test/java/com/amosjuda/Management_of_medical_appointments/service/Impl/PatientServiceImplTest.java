@@ -14,9 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
@@ -177,6 +179,57 @@ class PatientServiceImplTest {
     @Nested
     @Order(3)
     class getOnePatientById {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("Should return patient when ID exists")
+        void shouldReturnPatient_WhenIdExists() {
+            //Arrange
+            mockPatientById(Optional.of(fixture.patient));
+            when(patientMapper.toDto(fixture.patient)).thenReturn(fixture.responseDto);
+
+            //Act
+            assertThat(patientService.getOnePatientById(fixture.PATIENT_ID))
+                    .isEqualTo(fixture.responseDto);
+
+            //Assert
+            verify(patientRepository).findById(fixture.PATIENT_ID);
+            verify(patientMapper).toDto(fixture.patient);
+        }
+
+        @Test
+        @Tag("error-handling")
+        @DisplayName("Should throw RuntimeException when ID does not exist")
+        void shouldThrowRuntimeException_WhenIdNotFound() {
+            //Arrange
+            mockPatientById(Optional.empty());
+
+            //Act & Assert
+            assertRuntimeException("Patient not found",
+                    () -> patientService.getOnePatientById(fixture.PATIENT_ID));
+
+            verify(patientRepository).findById(fixture.PATIENT_ID);
+            verifyNoInteractions(patientMapper);
+        }
+
+        @RepeatedTest(value = 2, name = "Should handle repository calls consistently - Repetition {currentRepetition}")
+        @Tag("reliability")
+        @DisplayName("Should handle repository calls consistently")
+        void shouldHandleRepositoryCallsConsistently(RepetitionInfo repetitionInfo) {
+            // Arrange
+            mockPatientById(Optional.of(fixture.patient));
+            when(patientMapper.toDto(fixture.patient)).thenReturn(fixture.responseDto);
+
+            // Act
+            PatientResponseDto result = patientService.getOnePatientById(fixture.PATIENT_ID);
+
+            // Assert
+            assertThat(result).isEqualTo(fixture.responseDto);
+            assertThat(repetitionInfo.getCurrentRepetition()).isLessThanOrEqualTo(2);
+        }
+
+        private void mockPatientById(Optional<Patient> patient){
+            when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(patient);
+        }
     }
 
     @Nested
@@ -187,6 +240,11 @@ class PatientServiceImplTest {
     @Nested
     @Order(5)
     class deletePatient {
+    }
+
+    private void assertRuntimeException(String expectedMessage, Runnable executable) {
+        RuntimeException exception = assertThrows(RuntimeException.class, executable::run);
+        assertThat(exception.getMessage()).isEqualTo(expectedMessage);
     }
 
     public static class TestFixture {
