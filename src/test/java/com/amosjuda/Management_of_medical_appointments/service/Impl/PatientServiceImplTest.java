@@ -1,7 +1,9 @@
 package com.amosjuda.Management_of_medical_appointments.service.Impl;
 
 import com.amosjuda.Management_of_medical_appointments.config.PatientMapper;
+import com.amosjuda.Management_of_medical_appointments.dtos.request.AppointmentsRequestDto;
 import com.amosjuda.Management_of_medical_appointments.dtos.request.PatientRequestDto;
+import com.amosjuda.Management_of_medical_appointments.dtos.response.AppointmentsResponseDto;
 import com.amosjuda.Management_of_medical_appointments.dtos.response.PatientResponseDto;
 import com.amosjuda.Management_of_medical_appointments.models.Patient;
 import com.amosjuda.Management_of_medical_appointments.repositories.PatientRepository;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -116,6 +119,7 @@ class PatientServiceImplTest {
 
     @Nested
     @Order(2)
+    @DisplayName("GetALLPatients tests")
     class getALLPatients {
         @Test
         @Tag("Happy-path")
@@ -178,6 +182,7 @@ class PatientServiceImplTest {
 
     @Nested
     @Order(3)
+    @DisplayName("GetOnePatientById tests")
     class getOnePatientById {
         @Test
         @Tag("happy-path")
@@ -234,11 +239,89 @@ class PatientServiceImplTest {
 
     @Nested
     @Order(4)
+    @DisplayName("UpdatePatient tests")
     class updatePatient {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("It should update patient successfully when all data is valid")
+        void shouldUpdatePatientSuccessfully_WhenAllDataIsValid() {
+            //Arrange
+            PatientRequestDto requestDto = fixture.createValidRequestDto();
+            mockSuccessfulUpdate();
+
+            //Act
+            PatientResponseDto result = patientService.updatePatient(fixture.PATIENT_ID, requestDto);
+
+            //Assert
+            assertThat(result).isEqualTo(fixture.responseDto);
+            assertPatientUpdated(requestDto);
+            verifyUpdateInteractions();
+        }
+
+        @Test
+        @Tag("error-handling")
+        @DisplayName("Should throw RuntimeException when patient does not exist")
+        void shouldThrowRuntimeException_WhenPatientNotFound() {
+            //Arrange
+            PatientRequestDto requestDto = fixture.createValidUpdateRequestDto();
+            when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.empty());
+
+            // Act & Assert
+            assertRuntimeException("Patient not found",
+                    () -> patientService.updatePatient(fixture.PATIENT_ID, requestDto));
+
+            verify(patientRepository).findById(fixture.PATIENT_ID);
+            verify(patientRepository, never()).save(any());
+            verifyNoInteractions(patientMapper);
+        }
+
+        @Test
+        @DisplayName("Should update all patient fields correctly")
+        @Tag("field-validation")
+        void shouldUpdateAllPatientFieldsCorrectly() {
+            // Arrange
+            PatientRequestDto requestDto = fixture.createValidUpdateRequestDto();
+            Patient existingPatient = fixture.createMockPatient();
+
+            when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.of(existingPatient));
+            when(patientRepository.save(existingPatient)).thenReturn(existingPatient);
+            when(patientMapper.toDto(existingPatient)).thenReturn(fixture.responseDto);
+
+            // Act
+            patientService.updatePatient(fixture.PATIENT_ID, requestDto);
+
+            // Assert
+            assertAll("Patient fields update validation",
+                    () -> assertThat(existingPatient.getName()).isEqualTo(requestDto.getName()),
+                    () -> assertThat(existingPatient.getEmail()).isEqualTo(requestDto.getEmail()),
+                    () -> assertThat(existingPatient.getPhone()).isEqualTo(requestDto.getPhone()),
+                    () -> assertThat(existingPatient.getBirthdate()).isEqualTo(requestDto.getBirthdate())
+            );
+        }
+
+        private void mockSuccessfulUpdate() {
+            when(patientRepository.findById(fixture.PATIENT_ID)).thenReturn(Optional.of(fixture.patient));
+            when(patientRepository.save(fixture.patient)).thenReturn(fixture.patient);
+            when(patientMapper.toDto(fixture.patient)).thenReturn(fixture.responseDto);
+        }
+
+        private void assertPatientUpdated(PatientRequestDto requestDto) {
+            assertThat(fixture.patient.getName()).isEqualTo(requestDto.getName());
+            assertThat(fixture.patient.getEmail()).isEqualTo(requestDto.getEmail());
+            assertThat(fixture.patient.getPhone()).isEqualTo(requestDto.getPhone());
+            assertThat(fixture.patient.getBirthdate()).isEqualTo(requestDto.getBirthdate());
+        }
+
+        private void verifyUpdateInteractions() {
+            verify(patientRepository).findById(fixture.PATIENT_ID);
+            verify(patientRepository).save(fixture.patient);
+            verify(patientMapper).toDto(fixture.patient);
+        }
     }
 
     @Nested
     @Order(5)
+    @DisplayName("DeletePatient tests")
     class deletePatient {
     }
 
