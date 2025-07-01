@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -160,10 +161,61 @@ class DoctorServiceImplTest {
         }
     }
 
-    @Test
+    @Nested
     @Order(3)
     @DisplayName("GetOneDoctorById tests")
-    void getOneDoctorById() {
+    class getOneDoctorById {
+        @Test
+        @Tag("happy-path")
+        @DisplayName("Should return doctor when ID exists")
+        void shouldReturnDoctor_WhenIdExists() {
+            //Arrange
+            mockDoctorById(Optional.of(fixture.doctor));
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+
+            //Act
+            assertThat(doctorService.getOneDoctorById(fixture.DOCTOR_ID))
+                    .isEqualTo(fixture.responseDto);
+
+            //Assert
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verify(doctorMapper).toDto(fixture.doctor);
+        }
+
+        @Test
+        @Tag("error-handling")
+        @DisplayName("Should throw RuntimeException when ID does not exist")
+        void shouldThrowRuntimeException_WhenIdNotFound() {
+            //Arrange
+            mockDoctorById(Optional.empty());
+
+            //Act & Assert
+            assertRuntimeException("Doctor not found",
+                    () -> doctorService.getOneDoctorById(fixture.DOCTOR_ID));
+
+            verify(doctorRepository).findById(fixture.DOCTOR_ID);
+            verifyNoInteractions(doctorMapper);
+        }
+
+        @RepeatedTest(value = 2, name = "Should handle repository calls consistently - Repetition {currentRepetition}")
+        @Tag("reliability")
+        @DisplayName("Should handle repository calls consistently")
+        void shouldHandleRepositoryCallsConsistently(RepetitionInfo repetitionInfo) {
+            // Arrange
+            mockDoctorById(Optional.of(fixture.doctor));
+            when(doctorMapper.toDto(fixture.doctor)).thenReturn(fixture.responseDto);
+
+            // Act
+            DoctorResponseDto result = doctorService.getOneDoctorById(fixture.DOCTOR_ID);
+
+            // Assert
+            assertThat(result).isEqualTo(fixture.responseDto);
+            assertThat(repetitionInfo.getCurrentRepetition()).isLessThanOrEqualTo(2);
+        }
+
+        private void mockDoctorById(Optional<Doctor> doctor){
+            when(doctorRepository.findById(fixture.DOCTOR_ID)).thenReturn(doctor);
+        }
     }
 
     @Test
