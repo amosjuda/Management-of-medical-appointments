@@ -1,0 +1,32 @@
+# Ignorar diretórios de build
+target/
+build/
+
+# Ignorar diretórios de IDE
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# Ignorar arquivos de log
+*.log
+logs/
+
+# Ignorar arquivos de cache
+.cache/
+
+# Ignorar arquivos de controle de versão
+.git/
+.gitignore
+
+# Ignorar arquivos de ambiente local
+.env
+.env.*
+*.env
+src/**/*.env
+
+# Ignorar arquivos temporários
+tmp/
+*.tmp
